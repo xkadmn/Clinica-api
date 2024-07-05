@@ -1,111 +1,133 @@
 const mysql = require('mysql');
-const db = require('./db');
-const conexion = mysql.createConnection({
+
+const pool = mysql.createPool({
+    connectionLimit: 10,
     host: 'mysql.db.mdbgo.com',
     user: 'hkoo_usuariosclinica',
     password: 'Clinica1234.',
     database: 'hkoo_usuarios',
-    port: '',
+    port: ''
 });
 
-function conectar() {
-    conexion.connect(err => {
+// Función para realizar consultas
+function query(sql, args, callback) {
+    pool.getConnection((err, connection) => {
         if (err) {
-            console.error('Error de conexión:', err);
-            throw err;
+            console.error('Error al obtener conexión del pool:', err);
+            return callback(err);
         }
-        console.log('Conexión exitosa');
+        connection.query(sql, args, (err, rows) => {
+            connection.release(); // Liberar la conexión para que vuelva al pool
+            if (err) {
+                console.error('Error en la consulta SQL:', err);
+                return callback(err);
+            }
+            callback(null, rows);
+        });
     });
 }
-exports.conexion = conexion;
-exports.conectar = conectar;
 
-exports.buscarPersonas = function(respuesta) {
- conectar();
-    conexion.query('SELECT * FROM Usuario', (err, resultado) => {
-        if (err) {
-            console.error('Error al buscar personas:', err);
-            respuesta([]);
-        }
-        respuesta(resultado);
+// Función para insertar turnos
+function insertarTurnos(turnos, callback) {
+    const sql = `INSERT INTO Turno (usuario_medico_id, especialidad_id, fecha, hora, disponible) 
+                 VALUES (?, ?, ?, ?, ?)`;
+
+    turnos.forEach((turno) => {
+        pool.query(sql, [turno.medicoId, turno.especialidadId, turno.fecha, turno.hora, turno.disponible], (err, result) => {
+            if (err) {
+                console.error('Error al insertar turno:', err);
+                callback(err, null);
+            } else {
+                console.log('Turno insertado correctamente:', result);
+            }
+        });
     });
+
+    callback(null, { success: true, message: 'Turnos habilitados correctamente' });
+}
+
+// Exportar funciones
+module.exports = {
+    query: query,
+    insertarTurnos: insertarTurnos,
+    buscarPersonas: function(respuesta) {
+        const sql = 'SELECT * FROM Usuario';
+        query(sql, (err, resultado) => {
+            if (err) {
+                console.error('Error al buscar personas:', err);
+                respuesta([]);
+            } else {
+                respuesta(resultado);
+            }
+        });
+    },
+    insertarPersona: function(usuario, callback) {
+        const aprobado = usuario.tipo === '2' ? false : true;
+        const sql = `INSERT INTO Usuario (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [usuario.nombre, usuario.apellido, usuario.fecNac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado];
+
+        query(sql, values, (err, resultado) => {
+            if (err) {
+                console.error('Error al insertar usuario:', err);
+                callback({ success: false, message: 'Error al insertar usuario' });
+            } else {
+                console.log('Usuario insertado correctamente:', resultado);
+                callback({ success: true, message: 'Usuario insertado correctamente' });
+            }
+        });
+    },
+    buscarMedicosPendientes: function(respuesta) {
+        const sql = 'SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = false';
+        query(sql, (err, resultado) => {
+            if (err) {
+                console.error('Error al buscar médicos pendientes:', err);
+                respuesta([]);
+            } else {
+                respuesta(resultado);
+            }
+        });
+    },
+    aprobarMedico: function(id, callback) {
+        const sql = 'UPDATE Usuario SET aprobado = true WHERE id = ?';
+        query(sql, [id], (err, resultado) => {
+            if (err) {
+                console.error('Error al aprobar médico:', err);
+                callback({ success: false, message: 'Error al aprobar médico' });
+            } else {
+                console.log('Médico aprobado correctamente:', resultado);
+                callback({ success: true, message: 'Médico aprobado correctamente' });
+            }
+        });
+    },
+    obtenerEspecialidades: function(callback) {
+        const sql = 'SELECT * FROM Especialidad';
+        query(sql, (err, resultado) => {
+            if (err) {
+                console.error('Error al obtener especialidades:', err);
+                callback(err, null);
+            } else {
+                console.log('Especialidades obtenidas:', resultado);
+                callback(null, resultado);
+            }
+        });
+    },
+    obtenerEspecialidadesMedico: function(medicoId, callback) {
+        const sql = `
+            SELECT E.id, E.nombre
+            FROM Medico M
+            JOIN Especialidades_Medico EM ON M.medico_id = EM.medico_id
+            JOIN Especialidad E ON EM.especialidad_id = E.id
+            WHERE M.usuario_id = ?`;
+
+        query(sql, [medicoId], (err, resultado) => {
+            if (err) {
+                console.error('Error al obtener especialidades de médico:', err);
+                callback(err, null);
+            } else {
+                console.log('Especialidades del médico obtenidas:', resultado);
+                callback(null, resultado);
+            }
+        });
+    }
 };
-
-exports.insertarPersona = function(usuario, callback) {
-    //conectar();
-    const aprobado = usuario.tipo === '2' ? false : true;
-    const sql = `INSERT INTO Usuario (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-
-                 console.log(usuario)
-           
-
-    conexion.query(sql, [usuario.nombre, usuario.apellido, usuario.fecNac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado],
-      (err, resultado) => {
-        if (err) {
-          console.error('Error al insertar usuario:', err);
-          callback({ success: false, message: 'Error al insertar usuario' });
-        } else {
-          console.log('Usuario insertado correctamente:', resultado);
-          callback({ success: true, message: 'Usuario insertado correctamente' });
-        }
-      }
-    );
-  };
-
-
-exports.buscarMedicosPendientes = function(respuesta) {
-    conexion.query('SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = false', (err, resultado) => {
-        if (err) {
-            console.error('Error al buscar médicos pendientes:', err);
-            respuesta([]);
-        } else {
-            respuesta(resultado);
-        }
-    });
-};
-exports.aprobarMedico = function(id, callback) {
-   // conectar();
-    conexion.query('UPDATE Usuario SET aprobado = true WHERE id = ?', [id], (err, resultado) => {
-        if (err) {
-            console.error('Error al aprobar médico:', err);
-            callback({ success: false, message: 'Error al aprobar médico' });
-        } else {
-            console.log('Médico aprobado correctamente:', resultado);
-            callback({ success: true, message: 'Médico aprobado correctamente' });
-        }
-    });
-};
-
-exports.obtenerEspecialidades = function(callback) {
-    console.log('Obteniendo especialidades...');
-    conexion.query("SELECT * FROM Especialidad", function(err, resultado) {
-        if (err) {
-            console.error('Error al obtener especialidades api:', err);
-            callback(err, null);
-        } else {
-            console.log('Especialidades obtenidas:', resultado);
-            callback(null, resultado);
-        }
-    });
-};
-
-exports.obtenerEspecialidadesMedico = function(medicoId, callback) {
-    const query = `
-        SELECT E.id, E.nombre
-        FROM Medico M
-        JOIN Especialidades_Medico EM ON M.medico_id = EM.medico_id
-        JOIN Especialidad E ON EM.especialidad_id = E.id
-        WHERE M.usuario_id = ?`;
-
-    conexion.query(query, [medicoId], function(err, resultado) {
-        if (err) {
-            console.error('Error al obtener especialidades de médico:', err);
-            callback(err, null);
-        } else {
-            console.log('Especialidades del médico obtenidas:', resultado);
-            callback(null, resultado);
-        }
-    });
-};
-

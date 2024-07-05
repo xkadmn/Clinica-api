@@ -97,29 +97,26 @@ app.get('/medico/:id/especialidades', (req, res) => {
         res.json(especialidades);
     });
 });
+
 app.post('/api/turnos', (req, res) => {
-    const turno = req.body;
-    console.log('Datos del turno recibidos:', turno);  // Agregar console.log para depuración
+    const turnos = req.body;
+    console.log('Datos de los turnos recibidos:', turnos);
 
     // Verificar si los datos no son null
-    if (!turno.usuarioMedicoId || !turno.especialidadId || !turno.fecha || !turno.hora || turno.disponible === undefined) {
-        return res.status(400).json({ success: false, message: 'Datos del turno incompletos o incorrectos' });
+    for (const turno of turnos) {
+        if (!turno.medicoId || !turno.especialidadId || !turno.fecha || !turno.hora || turno.disponible === undefined) {
+            return res.status(400).json({ success: false, message: 'Datos del turno incompletos o incorrectos' });
+        }
     }
 
-    const sql = `INSERT INTO Turno (usuario_medico_id, especialidad_id, fecha, hora, disponible) 
-                 VALUES (?, ?, ?, ?, ?)`;
-
-    db.conexion.query(sql, [turno.usuarioMedicoId, turno.especialidadId, turno.fecha, turno.hora, turno.disponible], (err, result) => {
+    db.insertarTurnos(turnos, (err, resultado) => {
         if (err) {
             console.error('Error al insertar turno:', err);
             return res.status(500).json({ success: false, message: 'Error al insertar turno' });
-        } else {
-            console.log('Turno insertado correctamente:', result);
-            return res.json({ success: true, message: 'Turno habilitado correctamente' });
         }
+        res.json(resultado);
     });
 });
-
 
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
