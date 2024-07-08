@@ -118,6 +118,22 @@ app.post('/api/turnos', (req, res) => {
     });
 });
 
+// Endpoint para obtener todos los médicos de aprobarmedico.component.ts
+app.get('/todos-los-medicos', (req, res) => {
+    aplicacion.obtenerTodosLosMedicos((err, resultado) => {
+        if (err) {
+            console.error('Error al obtener todos los médicos:', err);
+            return res.status(500).json({ message: 'Error al obtener todos los médicos' });
+        }
+        res.json(resultado);
+    });
+})
+
+// Endpoint para obtener médicos aprobados
+app.get('/medicos-aprobados', (req, res) => {
+    aplicacion.obtenerMedicosAprobados(res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`);

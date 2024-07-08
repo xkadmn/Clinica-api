@@ -46,6 +46,8 @@ function insertarTurnos(turnos, callback) {
     callback(null, { success: true, message: 'Turnos habilitados correctamente' });
 }
 
+
+
 // Exportar funciones
 module.exports = {
     query: query,

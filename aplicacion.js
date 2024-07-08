@@ -83,3 +83,43 @@ exports.obtenerEspecialidadesMedico = function(medicoId, callback) {
         }
     });
 };
+
+/*/ función para obtener todos los médicos para aprobarmedicos.component.ts
+exports.obtenerTodosLosMedicos = function(callback) {
+    const sql = 'SELECT * FROM Usuario WHERE tipo = 2';
+    db.query(sql, (err, resultado) => {
+        if (err) {
+            console.error('Error al obtener todos los médicos:', err);
+            callback(err, null);
+        } else {
+            console.log('Todos los médicos obtenidos:', resultado);
+            callback(null, resultado);
+        }
+    });
+};*/
+
+// Obtener todos los médicos
+exports.obtenerTodosLosMedicos = function(res) {
+    const sql = 'SELECT * FROM Usuario WHERE tipo = 2';
+    db.query(sql, [], (err, resultado) => {
+        if (err) {
+            console.error('Error al obtener todos los médicos:', err);
+            res.status(500).json({ message: 'Error al obtener todos los médicos' });
+        } else {
+            res.json(resultado);
+        }
+    });
+};
+
+// Obtener médicos aprobados SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = true';
+exports.obtenerMedicosAprobados = function(res) {
+    const sql = 'SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = true';
+    db.query(sql, [], (err, resultado) => {
+        if (err) {
+            console.error('Error al obtener médicos aprobados:', err);
+            res.status(500).json({ message: 'Error al obtener médicos aprobados' });
+        } else {
+            res.json(resultado);
+        }
+    });
+};
