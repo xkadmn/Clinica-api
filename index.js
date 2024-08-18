@@ -40,7 +40,16 @@ app.get('/medicos-pendientes', (req, res) => {
 // Endpoint para aprobar un médico específico
 app.put('/aprobar-medico/:id', (req, res) => {
     const id = req.params.id;
-    aplicacion.aprobarMedico(id, res);
+   /* aplicacion.aprobarMedico(id, res);*/
+   const aprobado = req.body.aprobado;
+
+    aplicacion.aprobarMedico(id, aprobado, (err, resultado) => {
+        if (err) {
+            console.error('Error al actualizar el estado de aprobación del médico:', err);
+            return res.status(500).json({ message: 'Error al actualizar el estado de aprobación del médico' });
+        }
+        res.json(resultado);
+    });
 });
 
 // Endpoint para obtener todas las especialidades
@@ -118,16 +127,25 @@ app.post('/api/turnos', (req, res) => {
     });
 });
 
-// Endpoint para obtener todos los médicos de aprobarmedico.component.ts
-app.get('/todos-los-medicos', (req, res) => {
-    aplicacion.obtenerTodosLosMedicos((err, resultado) => {
-        if (err) {
-            console.error('Error al obtener todos los médicos:', err);
-            return res.status(500).json({ message: 'Error al obtener todos los médicos' });
-        }
-        res.json(resultado);
+app.get('/api/verturnos', (req, res) => {
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+  
+    db.query('SELECT * FROM Turno WHERE fecha BETWEEN ? AND ?', [startDate, endDate], (err, turnos) => {
+      if (err) {
+        console.error('Error al obtener turnos:', err);
+        return res.status(500).json({ message: 'Error al obtener turnos' });
+      }
+      res.json(turnos);
     });
-})
+  });
+
+ 
+
+
+app.get('/todos-los-medicos', (req, res) => {
+    aplicacion.obtenerTodosLosMedicos(res); 
+});
 
 // Endpoint para obtener médicos aprobados
 app.get('/medicos-aprobados', (req, res) => {

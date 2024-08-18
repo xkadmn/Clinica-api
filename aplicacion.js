@@ -52,7 +52,7 @@ exports.obtenerMedicosPendientes = function(res) {
     });
 };
 
-exports.aprobarMedico = function(id, res) {
+/*exports.aprobarMedico = function(id, res) {
     const sql = 'UPDATE Usuario SET aprobado = true WHERE id = ?';
     db.query(sql, [id], (err, resultado) => {
         if (err) {
@@ -61,6 +61,18 @@ exports.aprobarMedico = function(id, res) {
         } else {
             console.log('Médico aprobado correctamente:', resultado);
             res.json({ success: true, message: 'Médico aprobado correctamente' });
+        }
+    });
+};*/
+exports.aprobarMedico = function(id, aprobado, callback) {
+    const sql = 'UPDATE Usuario SET aprobado = ? WHERE id = ?';
+    db.query(sql, [aprobado, id], (err, resultado) => {
+        if (err) {
+            console.error('Error al actualizar el estado de aprobación del médico:', err);
+            callback(err, null);
+        } else {
+            console.log('Estado de aprobación del médico actualizado correctamente:', resultado);
+            callback(null, { success: true, message: 'Estado de aprobación actualizado correctamente' });
         }
     });
 };
