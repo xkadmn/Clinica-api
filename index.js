@@ -152,6 +152,12 @@ app.get('/medicos-aprobados', (req, res) => {
     aplicacion.obtenerMedicosAprobados(res);
 });
 
+// Endpoint para obtener el perfil de un usuario por su ID
+app.get('/perfil/:id', (req, res) => {
+    const usuarioId = req.params.id;
+    aplicacion.obtenerPerfilPorId(usuarioId, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`);

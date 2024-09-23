@@ -135,3 +135,55 @@ exports.obtenerMedicosAprobados = function(res) {
         }
     });
 };
+
+exports.obtenerEspecialidades = function(callback) {
+    db.obtenerEspecialidades(callback);
+}
+
+exports.obtenerMedicosPorEspecialidad = function(especialidadId, res) {
+    const sql = `          
+        SELECT * FROM Usuario AS U 
+        JOIN Especialidad_Medico AS EM ON U.id = EM.id_medico
+         WHERE EM.id_especialidad = ? AND U.aprobado = true;` ;
+    
+    db.query(sql, [especialidadId], (err, resultado) => {
+        if (err) {
+            console.error('Error al obtener médicos por especialidad:', err);
+            res.status(500).json({ message: 'Error al obtener médicos por especialidad' });
+        } else {
+            res.json(resultado);
+        }
+    });
+};
+
+exports.obtenerPerfilPorId = function(usuarioId, res) {
+    const sql = `
+        SELECT u.id, 
+       u.nombre, 
+       u.apellido, 
+       u.fecnac, 
+       u.mail, 
+       p.telefono1, 
+       p.telefono2, 
+       p.documento_tipo, 
+       p.documento_id, 
+       p.foto_perfil, 
+       p.direccion, 
+       p.localidad, 
+       p.nacionalidad, 
+       p.legajo_id 
+FROM Usuario u 
+JOIN Perfil p ON u.id = p.id_perfil 
+WHERE u.id = ?;`;
+
+    db.query(sql, [usuarioId], (err, datos) => {
+        if (err) {
+            console.error('Error al obtener perfil por ID:', err);
+            res.status(500).json({ message: 'Error interno del servidor' });
+        } else if (datos.length === 0) {
+            res.status(404).json({ message: 'Perfil no encontrado' });
+        } else {
+            res.json(datos[0]); // Retornamos solo el primer resultado
+        }
+    });
+};
