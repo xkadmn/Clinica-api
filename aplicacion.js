@@ -52,18 +52,6 @@ exports.obtenerMedicosPendientes = function(res) {
     });
 };
 
-/*exports.aprobarMedico = function(id, res) {
-    const sql = 'UPDATE Usuario SET aprobado = true WHERE id = ?';
-    db.query(sql, [id], (err, resultado) => {
-        if (err) {
-            console.error('Error al aprobar médico:', err);
-            res.status(500).json({ success: false, message: 'Error al aprobar médico' });
-        } else {
-            console.log('Médico aprobado correctamente:', resultado);
-            res.json({ success: true, message: 'Médico aprobado correctamente' });
-        }
-    });
-};*/
 exports.aprobarMedico = function(id, aprobado, callback) {
     const sql = 'UPDATE Usuario SET aprobado = ? WHERE id = ?';
     db.query(sql, [aprobado, id], (err, resultado) => {
@@ -79,36 +67,22 @@ exports.aprobarMedico = function(id, aprobado, callback) {
 
 exports.obtenerEspecialidadesMedico = function(medicoId, callback) {
     const query = `
-        SELECT E.id, E.nombre
-        FROM Medico M
-        JOIN Especialidades_Medico EM ON M.medico_id = EM.medico_id
-        JOIN Especialidad E ON EM.especialidad_id = E.id
-        WHERE M.usuario_id = ?`;
+        SELECT E.id, E.nombre 
+        FROM Usuario U 
+        JOIN Especialidad_Medico EM ON U.id = EM.id_medico 
+        JOIN Especialidad E ON EM.id_especialidad = E.id 
+        WHERE U.id = ?`;
 
     db.query(query, [medicoId], (err, resultado) => {
         if (err) {
-            console.error('Error al obtener especialidades de médico:', err);
+            console.error(`01 Error al obtener especialidades de médico con ID ${medicoId}:`, err);
             callback(err, null);
         } else {
-            console.log('Especialidades del médico obtenidas:', resultado);
+            console.log('02 Especialidades del médico obtenidas:', resultado);
             callback(null, resultado);
         }
     });
 };
-
-/*/ función para obtener todos los médicos para aprobarmedicos.component.ts
-exports.obtenerTodosLosMedicos = function(callback) {
-    const sql = 'SELECT * FROM Usuario WHERE tipo = 2';
-    db.query(sql, (err, resultado) => {
-        if (err) {
-            console.error('Error al obtener todos los médicos:', err);
-            callback(err, null);
-        } else {
-            console.log('Todos los médicos obtenidos:', resultado);
-            callback(null, resultado);
-        }
-    });
-};*/
 
 // Obtener todos los médicos
 exports.obtenerTodosLosMedicos = function(res) {

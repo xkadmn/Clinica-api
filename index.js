@@ -92,15 +92,15 @@ app.get('/medicos', (req, res) => {
 app.get('/medico/:id/especialidades', (req, res) => {
     const medicoId = req.params.id;
 
-    // Aquí deberías llamar a la función adecuada para obtener las especialidades del médico por su ID
-    db.obtenerEspecialidadesMedico(medicoId, (err, especialidades) => {
+
+    aplicacion.obtenerEspecialidadesMedico(medicoId, (err, especialidades) => {
         if (err) {
             console.error('Error al obtener especialidades de médico:', err);
-            return res.status(500).json({ message: 'Error interno al obtener especialidades de médico' });
+            return res.status(500).json({ message: 'Error interno al obtener especialidades de médico 01' });
         }
 
         if (!especialidades || especialidades.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron especialidades para el médico especificado' });
+            return res.status(404).json({ message: 'No se encontraron especialidades para el médico especificado 02' });
         }
 
         res.json(especialidades);

@@ -114,22 +114,6 @@ module.exports = {
             }
         });
     },
-    obtenerEspecialidadesMedico: function(medicoId, callback) {
-        const sql = `
-            SELECT E.id, E.nombre
-            FROM Medico M
-            JOIN Especialidades_Medico EM ON M.medico_id = EM.medico_id
-            JOIN Especialidad E ON EM.especialidad_id = E.id
-            WHERE M.usuario_id = ?`;
 
-        query(sql, [medicoId], (err, resultado) => {
-            if (err) {
-                console.error('Error al obtener especialidades de médico:', err);
-                callback(err, null);
-            } else {
-                console.log('Especialidades del médico obtenidas:', resultado);
-                callback(null, resultado);
-            }
-        });
-    }
+  
 };
