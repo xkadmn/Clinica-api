@@ -116,9 +116,10 @@ exports.obtenerEspecialidades = function(callback) {
 
 exports.obtenerMedicosPorEspecialidad = function(especialidadId, res) {
     const sql = `          
-        SELECT * FROM Usuario AS U 
+       SELECT U.id AS medico_id, U.nombre, U.apellido 
+        FROM Usuario AS U 
         JOIN Especialidad_Medico AS EM ON U.id = EM.id_medico
-         WHERE EM.id_especialidad = ? AND U.aprobado = true;` ;
+        WHERE EM.id_especialidad = ? AND U.aprobado = true;` ;
     
     db.query(sql, [especialidadId], (err, resultado) => {
         if (err) {
@@ -158,6 +159,19 @@ WHERE u.id = ?;`;
             res.status(404).json({ message: 'Perfil no encontrado' });
         } else {
             res.json(datos[0]); // Retornamos solo el primer resultado
+        }
+    });
+};
+
+exports.obtenerturnosmedicoporsemana = function (medicoId, especialidadId, fechaInicio, fechaFin, res) {
+    const sql = `SELECT * FROM Turno WHERE usuario_medico_id = ? AND especialidad_id = ? AND fecha BETWEEN ? AND ?`;
+    
+    db.query(sql, [medicoId, especialidadId, fechaInicio, fechaFin], (err, turnos) => {
+        if (err) {
+            console.error('Error al obtener turnos:', err);
+            res.status(500).json({ message: 'Error al obtener turnos' });
+        } else {
+            res.json(turnos);
         }
     });
 };

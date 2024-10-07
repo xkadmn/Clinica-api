@@ -158,6 +158,14 @@ app.get('/perfil/:id', (req, res) => {
     aplicacion.obtenerPerfilPorId(usuarioId, res);
 });
 
+
+app.get('/turnos/:medicoId', (req, res) => {
+    const medicoId = req.params.medicoId;
+    const { especialidadId, fechaInicio, fechaFin } = req.query;
+
+    aplicacion.obtenerturnosmedicoporsemana(medicoId, especialidadId, fechaInicio, fechaFin, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`);
