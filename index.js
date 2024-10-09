@@ -166,6 +166,27 @@ app.get('/turnos/:medicoId', (req, res) => {
     aplicacion.obtenerturnosmedicoporsemana(medicoId, especialidadId, fechaInicio, fechaFin, res);
 });
 
+app.get('/turnos/:medicoId/:especialidadId/:fecha', (req, res) => {
+    const medicoId = req.params.medicoId;
+    const especialidadId = req.params.especialidadId;
+    const fecha = req.params.fecha;
+
+    aplicacion.obtenerTurnosPorDia(medicoId, especialidadId, fecha, res);
+});
+
+app.put('/turnos/:id', (req, res) => {
+    const { id } = req.params;
+    const { usuario_paciente_id, disponible } = req.body;
+
+    aplicacion.actualizarTurno(id, usuario_paciente_id, disponible, (err, resultado) => {
+        if (err) {
+            console.error('Error al actualizar el turno:', err);
+            return res.status(500).send({ message: 'Error interno del servidor' });
+        }
+        res.status(200).send(resultado);
+    });
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`);

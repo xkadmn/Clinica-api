@@ -175,3 +175,32 @@ exports.obtenerturnosmedicoporsemana = function (medicoId, especialidadId, fecha
         }
     });
 };
+exports.obtenerTurnosPorDia = function(medicoId, especialidadId, fecha, res) {
+    const sql = `SELECT * FROM Turno WHERE usuario_medico_id = ? AND especialidad_id = ? AND fecha = ?`;
+    
+    db.query(sql, [medicoId, especialidadId, fecha], (err, turnos) => {
+        if (err) {
+            console.error('Error al obtener turnos por día:', err);
+            res.status(500).json({ message: 'Error al obtener turnos por día' });
+        } else {
+            res.json(turnos);
+        }
+    });
+};
+
+exports.actualizarTurno = function(id, usuario_paciente_id, disponible, callback) {
+    const sql = 'UPDATE Turno SET usuario_paciente_id = ?, disponible = ? WHERE id = ?';
+    
+    db.query(sql, [usuario_paciente_id, disponible, id], (err, resultado) => {
+        if (err) {
+            console.error('Error al actualizar el turno:', err);
+            return callback(err, null);
+        }
+        
+        if (resultado.affectedRows > 0) {
+            callback(null, { message: 'Turno actualizado correctamente' });
+        } else {
+            callback(null, { message: 'Turno no encontrado' });
+        }
+    });
+};
