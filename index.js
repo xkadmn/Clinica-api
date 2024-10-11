@@ -188,7 +188,7 @@ app.put('/turnos/:id', (req, res) => {
 });
 
 
-app.get('/turnos/paciente/id', (req, res) => {
+app.get('/turnos/pacienteId/:id', (req, res) => {
     const pacienteId = req.params.id; 
     aplicacion.obtenerTurnosPorPaciente(pacienteId, res); 
 });
