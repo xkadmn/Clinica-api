@@ -204,3 +204,27 @@ exports.actualizarTurno = function(id, usuario_paciente_id, disponible, callback
         }
     });
 };
+
+exports.obtenerTurnosPorPaciente = function(pacienteId, res) {
+    const sql = `
+        SELECT 
+            T.id, 
+            T.usuario_medico_id,
+            T.fecha, 
+            T.hora, 
+            T.disponible 
+        FROM 
+            Turno T 
+        WHERE 
+            T.usuario_paciente_id = ?`;
+
+    db.query(sql, [pacienteId], (err, turnos) => {
+        if (err) {
+            console.error('Error al obtener turnos del paciente:', err);
+            res.status(500).json({ message: 'Error al obtener turnos del paciente' });
+        } else {
+            res.json(turnos);
+        }
+    });
+};
+

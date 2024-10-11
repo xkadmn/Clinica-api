@@ -187,6 +187,12 @@ app.put('/turnos/:id', (req, res) => {
     });
 });
 
+
+app.get('/turnos/paciente/:id', (req, res) => {
+    const pacienteId = req.params.id; 
+    aplicacion.obtenerTurnosPorPaciente(pacienteId, res); 
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`);
