@@ -193,6 +193,13 @@ app.get('/turnos/pacienteId/:id', (req, res) => {
     aplicacion.obtenerTurnosPorPaciente(pacienteId, res); 
 });
 
+app.put('/perfil/:id', (req, res) => {
+    const usuarioId = req.params.id;
+    const perfilData = req.body;
+
+    aplicacion.actualizarPerfil(usuarioId, perfilData, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`);

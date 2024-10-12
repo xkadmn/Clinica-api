@@ -228,3 +228,44 @@ exports.obtenerTurnosPorPaciente = function(pacienteId, res) {
     });
 };
 
+exports.actualizarPerfil = function(usuarioId, perfilData, res) {
+    const sql = `
+        UPDATE Perfil 
+        SET 
+            telefono1 = ?, 
+            telefono2 = ?, 
+            documento_tipo = ?, 
+            documento_id = ?, 
+            mail = ?, 
+            foto_perfil = ?, 
+            direccion = ?, 
+            localidad = ?, 
+            nacionalidad = ?, 
+            legajo_id = ? 
+        WHERE id_perfil = ?`;
+
+    const values = [
+        perfilData.telefono1,
+        perfilData.telefono2,
+        perfilData.documento_tipo,
+        perfilData.documento_id,
+        perfilData.mail,
+        perfilData.foto_perfil,
+        perfilData.direccion,
+        perfilData.localidad,
+        perfilData.nacionalidad,
+        perfilData.legajo_id,
+        usuarioId
+    ];
+
+    db.query(sql, values, (err, resultado) => {
+        if (err) {
+            console.error('Error al actualizar perfil:', err);
+            res.status(500).json({ success: false, message: 'Error al actualizar perfil' });
+        } else if (resultado.affectedRows === 0) {
+            res.status(404).json({ success: false, message: 'Perfil no encontrado' });
+        } else {
+            res.json({ success: true, message: 'Perfil actualizado correctamente' });
+        }
+    });
+};
