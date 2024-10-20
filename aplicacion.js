@@ -40,6 +40,42 @@ exports.insertar = function(usuario, res) {
     });
 };
 
+// Función para insertar perfil
+exports.insertarPerfil = function(perfilData, res) {
+    const sql = `INSERT INTO Perfil (id, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, foto_perfil) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [perfilData.id, perfilData.telefono1, perfilData.telefono2, perfilData.direccion, perfilData.localidad, perfilData.nacionalidad, perfilData.documento_tipo, perfilData.documento_id, perfilData.foto_perfil];
+
+    db.query(sql, values, (err, resultado) => {
+        if (err) {
+            console.error('Error al insertar perfil:', err);
+            res.status(500).json({ success: false, message: 'Error al insertar perfil' });
+        } else {
+            console.log('Perfil insertado correctamente:', resultado);
+            res.json({ success: true, message: 'Perfil insertado correctamente', perfilId: resultado.insertId });
+        }
+    });
+};
+
+
+// Función para insertar ficha médica
+exports.insertarFichaMedica = function(fichaData, res) {
+    const sql = `INSERT INTO ficha_medico (id_medico, experiencia, certificaciones, idiomas, area_atencion) 
+                 VALUES (?, ?, ?, ?, ?)`;
+    const values = [fichaData.id_medico, fichaData.experiencia, fichaData.certificaciones, fichaData.idiomas, fichaData.area_atencion];
+
+    db.query(sql, values, (err, resultado) => {
+        if (err) {
+            console.error('Error al insertar ficha médica:', err);
+            res.status(500).json({ success: false, message: 'Error al insertar ficha médica' });
+        } else {
+            console.log('Ficha médica insertada correctamente:', resultado);
+            res.json({ success: true, message: 'Ficha médica insertada correctamente' });
+        }
+    });
+};
+
+
 exports.obtenerMedicosPendientes = function(res) {
     const sql = 'SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = false';
     db.query(sql, (err, datos) => {

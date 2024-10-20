@@ -30,7 +30,17 @@ app.post('/insertar', (req, res) => {
     aplicacion.insertar(usuario, res);
 });
 
+// Endpoint para insertar perfil
+app.post('/perfil', (req, res) => {
+    const perfilData = req.body;
+    aplicacion.insertarPerfil(perfilData, res);
+});
 
+// Endpoint para insertar ficha médica
+app.post('/ficha-medica', (req, res) => {
+    const fichaData = req.body;
+    aplicacion.insertarFichaMedica(fichaData, res);
+});
 
 // Endpoint para obtener médicos pendientes de aprobación
 app.get('/medicos-pendientes', (req, res) => {
