@@ -27,7 +27,7 @@ exports.insertar = function(usuario, res) {
     const aprobado = usuario.tipo === '2' ? false : true;
     const sqlUsuario = `INSERT INTO Usuario (id, nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const valuesUsuario = [usuario.nombre, usuario.apellido, usuario.fecnac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado];
+    const valuesUsuario = [usuario.id, usuario.nombre, usuario.apellido, usuario.fecnac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado];
 
     db.query(sqlUsuario, valuesUsuario, (err, resultado) => {
         if (err) {
