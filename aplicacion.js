@@ -41,21 +41,22 @@ exports.insertar = function(usuario, res) {
 };
 
 // Función para insertar perfil
-exports.insertarPerfil = function(perfilData, res) {
-    const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, foto_perfil) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [perfilData.id, perfilData.telefono1, perfilData.telefono2, perfilData.direccion, perfilData.localidad, perfilData.nacionalidad, perfilData.documento_tipo, perfilData.documento_id, perfilData.foto_perfil];
+exports.insertarPerfil = function(perfil, callback) {
+    const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, mail, foto_perfil) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [perfil.id, perfil.telefono1, perfil.telefono2, perfil.direccion, perfil.localidad, perfil.nacionalidad, perfil.documento_tipo, perfil.documento_id, perfil.mail, perfil.foto_perfil];
 
-    db.query(sql, values, (err, resultado) => {
+    query(sql, values, (err, resultado) => {
         if (err) {
             console.error('Error al insertar perfil:', err);
-            res.status(500).json({ success: false, message: 'Error al insertar perfil' });
+            callback({ success: false, message: 'Error al insertar perfil' });
         } else {
             console.log('Perfil insertado correctamente:', resultado);
-            res.json({ success: true, message: 'Perfil insertado correctamente', perfilId: resultado.insertId });
+            callback({ success: true, message: 'Perfil insertado correctamente' });
         }
     });
 };
+
 
 
 // Función para insertar ficha médica
