@@ -46,7 +46,7 @@ exports.insertarPerfil = function(perfil, callback) {
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [perfil.id, perfil.telefono1, perfil.telefono2, perfil.direccion, perfil.localidad, perfil.nacionalidad, perfil.documento_tipo, perfil.documento_id, perfil.mail, perfil.foto_perfil];
 
-    query(sql, values, (err, resultado) => {
+    db.query(sql, values, (err, resultado) => { // Cambia 'query' a 'db.query'
         if (err) {
             console.error('Error al insertar perfil:', err);
             callback({ success: false, message: 'Error al insertar perfil' });

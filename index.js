@@ -83,7 +83,7 @@ app.get('/medicos-por-especialidad/:especialidadId', (req, res) => {
 });
 
 
-// Incluimos el endpoint /medicos para obtener médicos por especialidad
+//  médicos 
 app.get('/medicos', (req, res) => {
     const especialidadId = req.query.especialidad;
     if (!especialidadId) {
