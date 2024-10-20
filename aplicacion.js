@@ -25,20 +25,80 @@ function validarUsuario(datos, usuario) {
 
 exports.insertar = function(usuario, res) {
     const aprobado = usuario.tipo === '2' ? false : true;
-    const sql = `INSERT INTO Usuario (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [usuario.nombre, usuario.apellido, usuario.fecnac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado];
+    const sqlUsuario = `INSERT INTO Usuario (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const valuesUsuario = [usuario.nombre, usuario.apellido, usuario.fecnac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado];
 
-    db.query(sql, values, (err, resultado) => {
+    db.query(sqlUsuario, valuesUsuario, (err, resultado) => {
         if (err) {
             console.error('Error al insertar usuario:', err);
             res.status(500).json({ success: false, message: 'Error al insertar usuario' });
         } else {
             console.log('Usuario insertado correctamente:', resultado);
-            res.json({ success: true, message: 'Usuario insertado correctamente' });
+            const nuevoId = resultado.insertId; // Obtener el ID del nuevo usuario
+
+            // Ahora insertar el perfil
+            const perfil = usuario.perfil; // Asumiendo que el perfil viene en el objeto usuario
+            const sqlPerfil = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, mail, foto_perfil) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const valuesPerfil = [nuevoId, perfil.telefono1, perfil.telefono2, perfil.direccion, perfil.localidad, perfil.nacionalidad, perfil.documento_tipo, perfil.documento_id, perfil.mail, perfil.foto_perfil];
+
+            db.query(sqlPerfil, valuesPerfil, (errPerfil, resultadoPerfil) => {
+                if (errPerfil) {
+                    console.error('Error al insertar perfil:', errPerfil);
+                    res.status(500).json({ success: false, message: 'Error al insertar perfil' });
+                } else {
+                    console.log('Perfil insertado correctamente:', resultadoPerfil);
+                    
+                    // Si es un médico, insertar ficha médica y especialidades
+                    if (usuario.tipo === '2') {
+                        const fichaMedica = usuario.fichaMedica; 
+                        const sqlFichaMedica = `INSERT INTO ficha_medico (id_medico, experiencia, certificaciones, idiomas, area_atencion) 
+                                                VALUES (?, ?, ?, ?, ?)`;
+                        const valuesFichaMedica = [nuevoId, fichaMedica.experiencia, fichaMedica.certificaciones, fichaMedica.idiomas, fichaMedica.area_atencion];
+
+                        db.query(sqlFichaMedica, valuesFichaMedica, (errFicha, resultadoFicha) => {
+                            if (errFicha) {
+                                console.error('Error al insertar ficha médica:', errFicha);
+                                res.status(500).json({ success: false, message: 'Error al insertar ficha médica' });
+                            } else {
+                                console.log('Ficha médica insertada correctamente:', resultadoFicha);
+
+                                // Ahora insertar especialidades
+                                const especialidades = usuario.especialidades; 
+                                const sqlEspecialidadMedico = `INSERT INTO Especialidad_Medico (id_medico, id_especialidad) VALUES (?, ?)`;
+
+                                // Insertar cada especialidad
+                                const queries = especialidades.map(id_especialidad => {
+                                    return new Promise((resolve, reject) => {
+                                        db.query(sqlEspecialidadMedico, [nuevoId, id_especialidad], (errEspecialidad) => {
+                                            if (errEspecialidad) {
+                                                return reject(errEspecialidad);
+                                            }
+                                            resolve();
+                                        });
+                                    });
+                                });
+
+                                Promise.all(queries)
+                                    .then(() => {
+                                        res.json({ success: true, message: 'Usuario, perfil, ficha médica y especialidades insertados correctamente' });
+                                    })
+                                    .catch(err => {
+                                        console.error('Error al insertar especialidades:', err);
+                                        res.status(500).json({ success: false, message: 'Error al insertar especialidades' });
+                                    });
+                            }
+                        });
+                    } else {
+                        res.json({ success: true, message: 'Usuario y perfil insertados correctamente' });
+                    }
+                }
+            });
         }
     });
 };
+
 
 // Función para insertar perfil
 exports.insertarPerfil = function(perfil, callback) {

@@ -64,13 +64,11 @@ app.put('/aprobar-medico/:id', (req, res) => {
 
 // Endpoint para obtener todas las especialidades
 app.get('/especialidades/', (req, res) => {
-    console.log('Solicitud para obtener especialidades recibida');
     aplicacion.obtenerEspecialidades((err, resultado) => {
         if (err) {
             console.error('Error en el endpoint /especialidades:', err);
             res.status(500).json({ message: 'Error al obtener especialidades', error: err });
         } else {
-            console.log('Especialidades enviadas al cliente:', resultado);
             res.json(resultado);
         }
     });
