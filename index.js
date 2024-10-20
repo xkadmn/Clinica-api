@@ -23,6 +23,18 @@ app.post('/login', (req, res) => {
     console.log('Usuario recibido en /login:', usuario);
     aplicacion.leer(usuario, res);
 });
+// Endpoint para traer ultimo id usuario creado
+app.get('/ultimo-id', (req, res) => {
+    const sql = 'SELECT id FROM Usuario ORDER BY id DESC LIMIT 1';
+    db.query(sql, (err, resultados) => {
+        if (err) {
+            console.error('Error al obtener el último ID:', err);
+            return res.status(500).json({ message: 'Error al obtener el último ID' });
+        }
+        const ultimoId = resultados.length > 0 ? resultados[0].id : 0; // Devuelve 0 si no hay usuarios
+        res.json(ultimoId);
+    });
+});
 
 // Endpoint para insertar usuario
 app.post('/insertar', (req, res) => {
