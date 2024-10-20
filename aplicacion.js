@@ -42,7 +42,7 @@ exports.insertar = function(usuario, res) {
 
 // Función para insertar perfil
 exports.insertarPerfil = function(perfilData, res) {
-    const sql = `INSERT INTO Perfil (id, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, foto_perfil) 
+    const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, foto_perfil) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [perfilData.id, perfilData.telefono1, perfilData.telefono2, perfilData.direccion, perfilData.localidad, perfilData.nacionalidad, perfilData.documento_tipo, perfilData.documento_id, perfilData.foto_perfil];
 
