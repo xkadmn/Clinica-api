@@ -44,7 +44,21 @@ exports.insertar = function(usuario, res) {
 exports.insertarPerfil = function(perfilData, usuarioId, res) {
     const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [usuarioId, perfilData.telefono1, perfilData.telefono2, perfilData.documento_tipo, perfilData.documento_id, perfilData.mail, perfilData.foto_perfil, perfilData.direccion, perfilData.localidad, perfilData.nacionalidad, perfilData.legajo_id];
+    
+    const values = [
+        usuarioId,
+        perfilData.telefono1,
+        perfilData.telefono2,
+        perfilData.documento_tipo,
+        perfilData.documento_id,
+        perfilData.mail,
+        perfilData.foto_perfil,
+        perfilData.direccion,
+        perfilData.localidad,
+        perfilData.nacionalidad,
+        perfilData.legajo_id || '' // Usar null si no se proporciona legajo_id
+    ];
+    
     db.query(sql, values, (err, resultado) => {
         if (err) {
             console.error('Error al insertar perfil:', err);
@@ -54,7 +68,6 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         }
     });
 }
-
 
 exports.insertarFichaMedica = function(fichaData, usuarioId, res) {
     const sql = `INSERT INTO ficha-medico (id_medico, formacion, experiencia, certificaciones, idiomas, area-atencion) VALUES (?, ?,?,?,?,?)`;
