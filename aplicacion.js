@@ -42,24 +42,28 @@ exports.insertar = function(usuario, res) {
 };
 
 exports.insertarPerfil = function(perfilData, usuarioId, res) {
+    if (!perfilData || !usuarioId) {
+        return res.status(400).json({ success: false, message: 'Datos de perfil o ID de usuario no proporcionados.' });
+    }
+
     const values = [
-        usuarioId, 
-        perfilData.telefono1, 
-        perfilData.telefono2, 
-        perfilData.documento_tipo, 
-        perfilData.documento_id, 
-        perfilData.mail, 
-        perfilData.foto_perfil, 
-        perfilData.direccion, 
-        perfilData.localidad, 
-        perfilData.nacionalidad, 
+        usuarioId,
+        perfilData.telefono1,
+        perfilData.telefono2,
+        perfilData.documento_tipo,
+        perfilData.documento_id,
+        perfilData.mail,
+        perfilData.foto_perfil,
+        perfilData.direccion,
+        perfilData.localidad,
+        perfilData.nacionalidad,
         perfilData.legajo_id // Asegúrate de que este campo no sea null
     ];
-    
+
     const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    console.log('Datos a insertar:', values); // Agrega este log para depurar
+    console.log('Datos a insertar:', values); // Log para depuración
 
     db.query(sql, values, (err, resultado) => {
         if (err) {
@@ -70,7 +74,6 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         }
     });
 }
-
 exports.insertarFichaMedica = function(fichaData, usuarioId, res) {
     const sql = `INSERT INTO ficha-medico (id_medico, formacion, experiencia, certificaciones, idiomas, area-atencion) VALUES (?, ?,?,?,?,?)`;
     const values = [usuarioId, fichaData.datos_medicos];
