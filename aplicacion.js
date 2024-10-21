@@ -99,44 +99,6 @@ exports.insertar = function(usuario, res) {
     });
 };
 
-
-// Función para insertar perfil
-exports.insertarPerfil = function(perfil, callback) {
-    const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, mail, foto_perfil) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const values = [perfil.id, perfil.telefono1, perfil.telefono2, perfil.direccion, perfil.localidad, perfil.nacionalidad, perfil.documento_tipo, perfil.documento_id, perfil.mail, perfil.foto_perfil];
-
-    db.query(sql, values, (err, resultado) => { // Cambia 'query' a 'db.query'
-        if (err) {
-            console.error('Error al insertar perfil:', err);
-            callback({ success: false, message: 'Error al insertar perfil' });
-        } else {
-            console.log('Perfil insertado correctamente:', resultado);
-            callback({ success: true, message: 'Perfil insertado correctamente' });
-        }
-    });
-};
-
-
-
-// Función para insertar ficha médica
-exports.insertarFichaMedica = function(fichaData, res) {
-    const sql = `INSERT INTO ficha_medico (id_medico, experiencia, certificaciones, idiomas, area_atencion) 
-                 VALUES (?, ?, ?, ?, ?)`;
-    const values = [fichaData.id_medico, fichaData.experiencia, fichaData.certificaciones, fichaData.idiomas, fichaData.area_atencion];
-
-    db.query(sql, values, (err, resultado) => {
-        if (err) {
-            console.error('Error al insertar ficha médica:', err);
-            res.status(500).json({ success: false, message: 'Error al insertar ficha médica' });
-        } else {
-            console.log('Ficha médica insertada correctamente:', resultado);
-            res.json({ success: true, message: 'Ficha médica insertada correctamente' });
-        }
-    });
-};
-
-
 exports.obtenerMedicosPendientes = function(res) {
     const sql = 'SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = false';
     db.query(sql, (err, datos) => {
