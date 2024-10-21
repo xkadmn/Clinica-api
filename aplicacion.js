@@ -40,53 +40,54 @@ exports.insertar = function(usuario, res) {
     });
 };
 
-function insertarPerfil(perfil, nuevoId, res, usuario) {
-    const requiredFields = [perfil.telefono1, perfil.direccion, perfil.localidad, perfil.nacionalidad, perfil.documento_tipo, perfil.documento_id, perfil.mail];
-    if (requiredFields.some(field => !field)) {
-        return res.status(400).json({ success: false, message: 'Faltan datos en el perfil' });
-    }
-
-        if (usuario.tipo === '2') {
-            insertarFichaMedicaYEspecialidades(usuario.fichaMedica, usuario.especialidades, nuevoId, res);
+function insertarPerfil(perfilData, usuarioId, res) {
+    const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [usuarioId, perfilData.telefono1, perfilData.telefono2, perfilData.documento_tipo, perfilData.documento_id, perfilData.mail, perfilData.foto_perfil, perfilData.direccion, perfilData.localidad, perfilData.nacionalidad, perfilData.legajo_id];
+    db.query(sql, values, (err, resultado) => {
+        if (err) {
+            console.error('Error al insertar perfil:', err);
+            res.status(500).json({ success: false, message: 'Error al insertar perfil' });
         } else {
-            res.json({ success: true, message: 'Usuario y perfil insertados correctamente' });
+            res.json({ success: true, message: 'Perfil insertado correctamente' });
         }
-    };
-
-
-function insertarFichaMedicaYEspecialidades(fichaMedica, especialidades, nuevoId, res) {
-    const sqlFichaMedica = `INSERT INTO ficha_medico (id_medico, experiencia, certificaciones, idiomas, area_atencion) 
-                             VALUES (?, ?, ?, ?, ?)`;
-    const valuesFichaMedica = [nuevoId, fichaMedica.experiencia, fichaMedica.certificaciones, fichaMedica.idiomas, fichaMedica.area_atencion];
-
-    db.query(sqlFichaMedica, valuesFichaMedica, (errFicha, resultadoFicha) => {
-        if (errFicha) {
-            console.error('Error al insertar ficha médica:', errFicha);
-            return res.status(500).json({ success: false, message: 'Error al insertar ficha médica' });
-        }
-
-        const sqlEspecialidadMedico = `INSERT INTO Especialidad_Medico (id_medico, id_especialidad) VALUES (?, ?)`;
-        const queries = especialidades.map(id_especialidad => {
-            return new Promise((resolve, reject) => {
-                db.query(sqlEspecialidadMedico, [nuevoId, id_especialidad], (errEspecialidad) => {
-                    if (errEspecialidad) {
-                        return reject(errEspecialidad);
-                    }
-                    resolve();
-                });
-            });
-        });
-
-        Promise.all(queries)
-            .then(() => {
-                res.json({ success: true, message: 'Usuario, perfil, ficha médica y especialidades insertados correctamente' });
-            })
-            .catch(err => {
-                console.error('Error al insertar especialidades:', err);
-                res.status(500).json({ success: false, message: 'Error al insertar especialidades' });
-            });
     });
 }
+
+
+function insertarFichaMedica(fichaData, usuarioId, res) {
+    const sql = `INSERT INTO ficha-medico (id_medico, formacion, experiencia, certificaciones, idiomas, area-atencion) VALUES (?, ?,?,?,?,?)`;
+    const values = [usuarioId, fichaData.datos_medicos];
+    db.query(sql, values, (err, resultado) => {
+        if (err) {
+            console.error('Error al insertar ficha médica:', err);
+            res.status(500).json({ success: false, message: 'Error al insertar ficha médica' });
+        } else {
+            res.json({ success: true, message: 'Ficha médica insertada correctamente' });
+        }
+    });
+}
+
+
+function insertarEspecialidades(medicoId, especialidades, res) {
+    const sql = `INSERT INTO Especialidad_Medico (id_medico, id_especialidad) VALUES (?, ?)`;
+    const insertPromises = especialidades.map(especialidadId => {
+        return new Promise((resolve, reject) => {
+            db.query(sql, [medicoId, especialidadId], (err, resultado) => {
+                if (err) {
+                    console.error('Error al insertar especialidad:', err);
+                    return reject(err);
+                }
+                resolve(resultado);
+            });
+        });
+    });
+
+    Promise.all(insertPromises)
+        .then(() => res.json({ success: true, message: 'Especialidades insertadas correctamente' }))
+        .catch(err => res.status(500).json({ success: false, message: 'Error al insertar especialidades' }));
+}
+
 
 exports.obtenerMedicosPendientes = function(res) {
     const sql = 'SELECT * FROM Usuario WHERE tipo = 2 AND aprobado = false';

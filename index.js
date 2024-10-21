@@ -53,6 +53,18 @@ app.post('/ficha-medica', (req, res) => {
     const fichaData = req.body;
     aplicacion.insertarFichaMedica(fichaData, res);
 });
+// Endpoint para insertar especialidades
+app.post('/insertar-especialidades', (req, res) => {
+    const { medicoId, especialidades } = req.body;
+
+    // Validación de datos
+    if (!medicoId || !Array.isArray(especialidades) || especialidades.length === 0) {
+        return res.status(400).json({ success: false, message: 'Datos incompletos o incorrectos' });
+    }
+
+    // Llamar a la función para insertar especialidades
+    insertarEspecialidades(medicoId, especialidades, res);
+});
 
 // Endpoint para obtener médicos pendientes de aprobación
 app.get('/medicos-pendientes', (req, res) => {
