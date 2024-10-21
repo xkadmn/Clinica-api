@@ -38,7 +38,7 @@ exports.insertar = function(usuario, res) {
             const nuevoId = resultado.insertId; // Obtener el ID del nuevo usuario
 
             // Ahora insertar el perfil
-            const perfil = usuario.perfil; // Asumiendo que el perfil viene en el objeto usuario
+            const perfil = usuario.perfil || {}; 
             const sqlPerfil = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, direccion, localidad, nacionalidad, documento_tipo, documento_id, mail, foto_perfil) 
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             const valuesPerfil = [nuevoId, perfil.telefono1, perfil.telefono2, perfil.direccion, perfil.localidad, perfil.nacionalidad, perfil.documento_tipo, perfil.documento_id, perfil.mail, perfil.foto_perfil];
