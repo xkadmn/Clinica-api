@@ -6,6 +6,7 @@ const app = express();
 
 // Middleware
 app.use(cors());
+
 app.use(express.json());
 
 // Rutas
@@ -56,13 +57,9 @@ app.post('/ficha-medica', (req, res) => {
 // Endpoint para insertar especialidades
 app.post('/insertar-especialidades', (req, res) => {
     const { medicoId, especialidades } = req.body;
-
-    // Validación de datos
     if (!medicoId || !Array.isArray(especialidades) || especialidades.length === 0) {
         return res.status(400).json({ success: false, message: 'Datos incompletos o incorrectos' });
     }
-
-    // Llamar a la función para insertar especialidades
     insertarEspecialidades(medicoId, especialidades, res);
 });
 
@@ -74,7 +71,6 @@ app.get('/medicos-pendientes', (req, res) => {
 // Endpoint para aprobar un médico específico
 app.put('/aprobar-medico/:id', (req, res) => {
     const id = req.params.id;
-   /* aplicacion.aprobarMedico(id, res);*/
    const aprobado = req.body.aprobado;
 
     aplicacion.aprobarMedico(id, aprobado, (err, resultado) => {
@@ -111,7 +107,6 @@ app.get('/medicos', (req, res) => {
     if (!especialidadId) {
         return res.status(400).json({ message: 'Especialidad ID is required' });
     }
-
     aplicacion.obtenerMedicosPorEspecialidad(especialidadId, (err, resultado) => {
         if (err) {
             console.error('Error al obtener médicos por especialidad:', err);
@@ -123,8 +118,6 @@ app.get('/medicos', (req, res) => {
 
 app.get('/medico/:id/especialidades', (req, res) => {
     const medicoId = req.params.id;
-
-
     aplicacion.obtenerEspecialidadesMedico(medicoId, (err, especialidades) => {
         if (err) {
             console.error('Error al obtener especialidades de médico:', err);
