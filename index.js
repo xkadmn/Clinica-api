@@ -44,7 +44,7 @@ app.post('/insertar', (req, res) => {
 });
 
 // Endpoint para insertar perfil
-app.post('/perfil', (req, res) => {
+app.post('/perfil/:usuarioId', (req, res) => {
     const perfilData = req.body;
     aplicacion.insertarPerfil(perfilData, res);
 });
