@@ -46,10 +46,13 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         return res.status(400).json({ success: false, message: 'Datos de perfil o ID de usuario no proporcionados.' });
     }
 
+    // Asignar el id_perfil aquí
+    const id_perfil = usuarioId; // Asumiendo que el usuarioId es el id_perfil
+
     // Revisa que todos los campos requeridos tengan un valor
     const values = [
-        usuarioId,
-        perfilData.telefono1 || '', // Asignar un valor por defecto si es undefined o null
+        id_perfil, // Agregar el id_perfil
+        perfilData.telefono1 || '',
         perfilData.telefono2 || '',
         perfilData.documento_tipo || '',
         perfilData.documento_id || '',
@@ -58,7 +61,7 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         perfilData.direccion || '',
         perfilData.localidad || '',
         perfilData.nacionalidad || '',
-        perfilData.legajo_id || '' // Asignar valor por defecto
+        perfilData.legajo_id || ''
     ];
 
     const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
