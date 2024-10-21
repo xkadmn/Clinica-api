@@ -46,12 +46,9 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         return res.status(400).json({ success: false, message: 'Datos de perfil o ID de usuario no proporcionados.' });
     }
 
-    // Asignar el id_perfil aquí
-    const id_perfil = usuarioId; // Asumiendo que el usuarioId es el id_perfil
-
     // Revisa que todos los campos requeridos tengan un valor
     const values = [
-       perfilData.id_perfil = usuarioId, // Agregar el id_perfil
+       usuarioId, // Agregar el id_perfil
         perfilData.telefono1 || '',
         perfilData.telefono2 || '',
         perfilData.documento_tipo || '',
