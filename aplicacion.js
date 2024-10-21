@@ -36,7 +36,7 @@ exports.insertar = function(usuario, res) {
         }
 
         const nuevoId = resultado.insertId; // Obtener el ID del nuevo usuario
-        insertarPerfil(usuario.perfil, nuevoId, res, usuario);
+       // insertarPerfil(usuario.perfil, nuevoId, res, usuario);
     });
 };
 
