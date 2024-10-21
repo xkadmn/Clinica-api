@@ -44,7 +44,7 @@ exports.insertar = function(usuario, res) {
 exports.insertarPerfil = function(perfilData, usuarioId, res) {
     const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    
+   console.log('Datos de perfil a insertar:', perfil); 
     const values = [
         usuarioId,
         perfilData.telefono1,
@@ -56,7 +56,7 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         perfilData.direccion,
         perfilData.localidad,
         perfilData.nacionalidad,
-        perfilData.legajo_id || '' // Usar null si no se proporciona legajo_id
+        perfilData.legajo_id || nul // Usar null si no se proporciona legajo_id
     ];
     
     db.query(sql, values, (err, resultado) => {
