@@ -52,6 +52,7 @@ exports.insertar = function(usuario, res) {
                     
                     // Si es un médico, insertar ficha médica y especialidades
                     if (usuario.tipo === '2') {
+                        console.log('Datos de usuario recibidos:', usuario); // Añade esta línea antes de acceder a fichaMedica
                         const fichaMedica = usuario.fichaMedica; 
                         const sqlFichaMedica = `INSERT INTO ficha_medico (id_medico, experiencia, certificaciones, idiomas, area_atencion) 
                                                 VALUES (?, ?, ?, ?, ?)`;
