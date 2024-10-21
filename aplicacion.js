@@ -24,6 +24,7 @@ function validarUsuario(datos, usuario) {
 }
 
 exports.insertar = function(usuario, res) {
+    console.log('Datos de usuario a insertar:', usuario);
     const aprobado = usuario.tipo === '2' ? false : true;
     const sqlUsuario = `INSERT INTO Usuario (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -34,9 +35,9 @@ exports.insertar = function(usuario, res) {
             console.error('Error al insertar usuario:', err);
             return res.status(500).json({ success: false, message: 'Error al insertar usuario' });
         }
-
-        const nuevoId = resultado.insertId; // Obtener el ID del nuevo usuario
-       // insertarPerfil(usuario.perfil, nuevoId, res, usuario);
+    
+        const nuevoId = resultado.insertId;
+        res.json({ success: true, message: 'Usuario insertado correctamente', id: nuevoId });
     });
 };
 
