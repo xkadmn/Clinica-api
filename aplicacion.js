@@ -51,7 +51,7 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
 
     // Revisa que todos los campos requeridos tengan un valor
     const values = [
-        id_perfil, // Agregar el id_perfil
+       perfilData.id_perfil = usuarioId, // Agregar el id_perfil
         perfilData.telefono1 || '',
         perfilData.telefono2 || '',
         perfilData.documento_tipo || '',
