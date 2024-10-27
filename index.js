@@ -223,6 +223,11 @@ app.delete('/eliminarturno/:id', (req, res) => {
     aplicacion.eliminarTurno(turnoId, res);
 });
 
+app.put('/cancelarturno/:id', (req, res) => {
+    const turnoId = parseInt(req.params.id, 10);
+    aplicacion.cancelarTurno(turnoId, res);
+});
+
 app.put('/perfil/:id', (req, res) => {
     const usuarioId = req.params.id;
     const perfilData = req.body;

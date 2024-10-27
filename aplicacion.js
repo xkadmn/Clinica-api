@@ -306,6 +306,14 @@ exports.eliminarTurno = function(turnoId, res) {
     });
 };
 
+exports.cancelarTurno = function(turnoId, res) {
+    db.query('UPDATE Turno SET disponible = 3 WHERE id = ?', [turnoId], (err, resultado) => {
+        if (err) return res.status(500).json({ success: false, message: 'Error al cancelar el turno' });
+        if (resultado.affectedRows === 0) return res.status(404).json({ success: false, message: 'Turno no encontrado' });
+        res.json({ success: true, message: 'Turno cancelado correctamente' });
+    });
+};
+
 exports.actualizarPerfil = function(usuarioId, perfilData, res) {
     const sql = `
         UPDATE Perfil 
