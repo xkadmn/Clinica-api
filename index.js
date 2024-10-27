@@ -218,7 +218,7 @@ app.get('/turnos/pacienteId/:id', (req, res) => {
     aplicacion.obtenerTurnosPorPaciente(pacienteId, res); 
 });
 
-app.delete('/turno/:id', (req, res) => {
+app.delete('/eliminarturno/:id', (req, res) => {
     const turnoId = parseInt(req.params.id, 10);
     aplicacion.eliminarTurno(turnoId, res);
 });
