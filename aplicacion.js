@@ -298,6 +298,14 @@ exports.obtenerTurnosPorPaciente = function(pacienteId, res) {
     });
 };
 
+exports.eliminarTurno = function(turnoId, res) {
+    db.query('DELETE FROM Turno WHERE id = ?', [turnoId], (err, resultado) => {
+        if (err) return res.status(500).json({ success: false, message: 'Error al eliminar el turno' });
+        if (resultado.affectedRows === 0) return res.status(404).json({ success: false, message: 'Turno no encontrado' });
+        res.json({ success: true, message: 'Turno eliminado correctamente' });
+    });
+};
+
 exports.actualizarPerfil = function(usuarioId, perfilData, res) {
     const sql = `
         UPDATE Perfil 
