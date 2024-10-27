@@ -278,8 +278,9 @@ exports.actualizarTurno = function(id, usuario_paciente_id, disponible, callback
 exports.obtenerTurnosPorPaciente = function(pacienteId, res) {
     const sql = `
         SELECT 
-            T.id, 
+            T.id AS idTurno, 
             T.usuario_medico_id,
+            T.especialidad_id,
             T.fecha, 
             T.hora, 
             T.disponible 
@@ -293,10 +294,12 @@ exports.obtenerTurnosPorPaciente = function(pacienteId, res) {
             console.error('Error al obtener turnos del paciente:', err);
             res.status(500).json({ message: 'Error al obtener turnos del paciente' });
         } else {
+            console.log('Turnos obtenidos:', turnos); // Log para depuración
             res.json(turnos);
         }
     });
 };
+
 
 exports.eliminarTurno = function(turnoId, res) {
     db.query('DELETE FROM Turno WHERE id = ?', [turnoId], (err, resultado) => {
