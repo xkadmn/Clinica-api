@@ -58,8 +58,11 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         perfilData.nacionalidad || null,
         perfilData.legajo_id || null 
     ];
-
-    const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
+    // log
+    values.forEach((value, index) => {
+        console.log(`Valor ${index}:`, value, `Tipo:`, typeof value);
+    });
+    const sql = `INSERT INTO Perfil (id, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     console.log('Datos a insertar:', values); // Log
