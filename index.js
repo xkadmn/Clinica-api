@@ -46,9 +46,9 @@ app.post('/insertar', (req, res) => {
 // Endpoint para insertar perfil
 app.post('/insertarperfil/:usuarioId', (req, res) => {
     const perfilData = req.body;
-    aplicacion.insertarPerfil(perfilData, res);
+    const usuarioId = req.params.usuarioId; 
+    aplicacion.insertarPerfil(perfilData, usuarioId, res); 
 });
-
 // Endpoint para insertar ficha médica
 app.post('/ficha-medica', (req, res) => {
     const fichaData = req.body;
