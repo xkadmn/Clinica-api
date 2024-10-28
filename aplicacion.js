@@ -322,7 +322,7 @@ exports.actualizarPerfil = function(usuarioId, perfilData, res) {
             localidad = ?, 
             nacionalidad = ?, 
             legajo_id = ? 
-        WHERE id_perfil = ?`;
+        WHERE id = ?`;
 
     const values = [
         perfilData.telefono1,
