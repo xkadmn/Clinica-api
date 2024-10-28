@@ -219,7 +219,7 @@ exports.obtenerPerfilPorId = function(usuarioId, res) {
        p.nacionalidad, 
        p.legajo_id 
 FROM Usuario u 
-JOIN Perfil p ON u.id = p.id_perfil 
+JOIN Perfil p ON u.id = p.id
 WHERE u.id = ?;`;
 
     db.query(sql, [usuarioId], (err, datos) => {
