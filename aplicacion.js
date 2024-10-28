@@ -45,26 +45,24 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
     if (!perfilData || !usuarioId) {
         return res.status(400).json({ success: false, message: 'Datos de perfil o ID de usuario no proporcionados.' });
     }
-
-    // Revisa que todos los campos requeridos tengan un valor
     const values = [
-        usuarioId, // Agregar el id_perfil
-        perfilData.telefono1 || '',
-        perfilData.telefono2 || '',
-        perfilData.documento_tipo || '',
-        perfilData.documento_id || '',
-        perfilData.mail || '',
-        perfilData.foto_perfil || '',
-        perfilData.direccion || '',
-        perfilData.localidad || '',
-        perfilData.nacionalidad || '',
-        perfilData.legajo_id || ''
+        usuarioId, 
+        perfilData.telefono1 || null, 
+        perfilData.telefono2 || null,
+        perfilData.documento_tipo || null,
+        perfilData.documento_id || null,
+        perfilData.mail || null,
+        perfilData.foto_perfil || null,
+        perfilData.direccion || null,
+        perfilData.localidad || null,
+        perfilData.nacionalidad || null,
+        perfilData.legajo_id || null 
     ];
 
     const sql = `INSERT INTO Perfil (id_perfil, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    console.log('Datos a insertar:', values); // Log para depuración
+    console.log('Datos a insertar:', values); // Log
 
     db.query(sql, values, (err, resultado) => {
         if (err) {
