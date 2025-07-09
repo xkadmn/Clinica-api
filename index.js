@@ -18,6 +18,13 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.get('/prueba', (req, res) => res.send('Hola mundo'));
 app.get('/pruebajson', (req, res) => res.json({ mensaje: 'Hola pruebajson' }));
 
+app.get('/localidades', (req, res) => {
+  db.query('SELECT id, nombre, provincia FROM Localidad ORDER BY provincia, nombre', (err, rows) => {
+    if (err) return res.status(500).json({ mensaje: 'Error al obtener localidades' });
+    res.json(rows);
+  });
+});
+
 // LOGIN con JWT (pública)
 app.post('/login', (req, res) => {
   const { usuario, pass } = req.body;
