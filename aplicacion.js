@@ -1,4 +1,5 @@
 const db = require('./db');
+const bcrypt = require('bcryptjs');  
 
 exports.leer = function(usuario, res) {
     db.query('SELECT * FROM Usuario', (err, datos) => {
@@ -12,11 +13,14 @@ exports.leer = function(usuario, res) {
         }
     });
 };
-
+// usa bcrypt.compareSync para comparar pass vs hash
 function validarUsuario(datos, usuario) {
     for (let i = 0; i < datos.length; i++) {
         const element = datos[i];
-        if (element.usuario === usuario.usuario && element.pass === usuario.pass) {
+        if (
+            element.usuario === usuario.usuario &&
+            bcrypt.compareSync(usuario.pass, element.pass)  
+        ) {
             return element;
         }
     }
@@ -25,10 +29,24 @@ function validarUsuario(datos, usuario) {
 
 exports.insertar = function(usuario, res) {
     console.log('Datos de usuario a insertar:', usuario);
+    const hashedPass = bcrypt.hashSync(usuario.pass, 10);
+
     const aprobado = usuario.tipo === '2' ? false : true;
-    const sqlUsuario = `INSERT INTO Usuario (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    const valuesUsuario = [usuario.nombre, usuario.apellido, usuario.fecnac, usuario.usuario, usuario.pass, usuario.mail, usuario.tipo, aprobado];
+    const sqlUsuario = `
+        INSERT INTO Usuario 
+          (nombre, apellido, fecnac, usuario, pass, mail, tipo, aprobado) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const valuesUsuario = [
+        usuario.nombre,
+        usuario.apellido,
+        usuario.fecnac,
+        usuario.usuario,
+        hashedPass,        
+        usuario.mail,
+        usuario.tipo,
+        aprobado
+    ];
 
     db.query(sqlUsuario, valuesUsuario, (err, resultado) => {
         if (err) {
@@ -40,6 +58,7 @@ exports.insertar = function(usuario, res) {
         res.json({ success: true, message: 'Usuario insertado correctamente', id: nuevoId });
     });
 };
+
 
 exports.insertarPerfil = function(perfilData, usuarioId, res) {
     if (!perfilData || !usuarioId) {
@@ -58,14 +77,12 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         perfilData.nacionalidad || null,
         perfilData.legajo_id || null 
     ];
-    // log
-    values.forEach((value, index) => {
-        console.log(`Valor ${index}:`, value, `Tipo:`, typeof value);
-    });
-    const sql = `INSERT INTO Perfil (id, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-    console.log('Datos a insertar:', values); // Log
+    console.log('Datos a insertar perfil:', values);
+    const sql = `
+      INSERT INTO Perfil 
+        (id, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
     db.query(sql, values, (err, resultado) => {
         if (err) {
@@ -75,7 +92,7 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
             res.json({ success: true, message: 'Perfil insertado correctamente' });
         }
     });
-}
+};
 
 exports.insertarFichaMedica = function(fichaData, usuarioId, res) {
     const sql = `INSERT INTO ficha-medico (id_medico, formacion, experiencia, certificaciones, idiomas, area-atencion) VALUES (?, ?,?,?,?,?)`;
