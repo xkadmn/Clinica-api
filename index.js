@@ -11,7 +11,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Pruebas públicas
 app.get('/prueba', (req, res) => res.send('Hola mundo'));
@@ -37,6 +38,18 @@ app.post('/login', (req, res) => {
 app.post('/insertar', (req, res) => {
   aplicacion.insertar(req.body, res);
 });
+// Registro de perfil PÚBLICO durante el flujo de registro
+app.post('/insertarperfil/:usuarioId', (req, res) => {
+  aplicacion.insertarPerfil(req.body, req.params.usuarioId, res);
+});
+
+app.post('/ficha-medica/:usuarioId', (req, res) => {
+  aplicacion.insertarFichaMedica(req.body, req.params.usuarioId, res);
+});
+
+app.get('/especialidades', (req, res) => aplicacion.obtenerEspecialidades(res));
+
+
 
 // Middleware para verificar JWT en rutas protegidas
 function verificarToken(req, res, next) {
@@ -54,19 +67,6 @@ app.get('/ultimo-id', verificarToken, (req, res) => {
   aplicacion.obtenerUltimoId(res);
 });
 
-app.post('/insertar', verificarToken, (req, res) => {
-  aplicacion.insertar(req.body, res);
-});
-
-app.post('/insertarperfil/:usuarioId', verificarToken, (req, res) => {
-  aplicacion.insertarPerfil(req.body, req.params.usuarioId, res);
-});
-
-app.post('/ficha-medica', verificarToken, (req, res) => {
-  aplicacion.insertarFichaMedica(req.body, res);
-});
-
-app.get('/especialidades', (req, res) => aplicacion.obtenerEspecialidades(res));
 
 app.get('/api/verturnos', verificarToken, (req, res) => aplicacion.verTurnos(res));
 app.post('/api/turnos', verificarToken, (req, res) => aplicacion.insertarTurno(req.body, res));
