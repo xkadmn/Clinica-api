@@ -2,11 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const aplicacion = require('./aplicacion');
 const db = require('./db');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
-
 const app = express();
 
 // Middleware
@@ -25,21 +22,7 @@ app.get('/localidades', (req, res) => {
   });
 });
 
-// LOGIN con JWT (pública)
-app.post('/login', (req, res) => {
-  const { usuario, pass } = req.body;
-  db.query('SELECT * FROM Usuario WHERE usuario = ?', [usuario], (err, resultados) => {
-    if (err) return res.status(500).json({ mensaje: 'Error interno del servidor' });
-    if (!resultados.length) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-    const found = resultados[0];
-    if (!bcrypt.compareSync(pass, found.pass)) {
-      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-    }
-    const payload = { id: found.id, rol: found.tipo };
-    const token = jwt.sign(payload, SECRET, { expiresIn: '1h' });
-    res.json({ token, usuario: found.usuario, tipo: found.tipo });
-  });
-});
+app.post('/login', (req, res) => aplicacion.login(req.body, res));
 
 //  Registro de usuario **público**, sin verificarToken
 app.post('/insertar', (req, res) => {
