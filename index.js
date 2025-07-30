@@ -2,10 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const aplicacion = require('./aplicacion');
 const db = require('./db');
+<<<<<<< HEAD
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
+=======
+>>>>>>> c7b9b67 (mantener logueado y rta loguin con todos los datos de usu)
 
 const app = express();
 
@@ -25,6 +28,7 @@ app.get('/localidades', (req, res) => {
   });
 });
 
+<<<<<<< HEAD
 // LOGIN con JWT (pública)
 app.post('/login', (req, res) => {
   const { usuario, pass } = req.body;
@@ -39,6 +43,10 @@ app.post('/login', (req, res) => {
     const token = jwt.sign(payload, SECRET, { expiresIn: '1h' });
     res.json({ token, usuario: found.usuario, tipo: found.tipo });
   });
+=======
+app.post('/login', (req, res) => {
+  aplicacion.login(req.body, res);
+>>>>>>> c7b9b67 (mantener logueado y rta loguin con todos los datos de usu)
 });
 
 //  Registro de usuario **público**, sin verificarToken

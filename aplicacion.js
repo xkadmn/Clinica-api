@@ -1,5 +1,64 @@
 const db = require('./db');
+<<<<<<< HEAD
 const bcrypt = require('bcryptjs');  
+=======
+const bcrypt = require('bcryptjs'); 
+const jwt = require('jsonwebtoken');
+const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
+
+exports.login = function (usuarioData, res) {
+  const { usuario, pass } = usuarioData;
+  if (!usuario || !pass) {
+    return res.status(400).json({ mensaje: 'Usuario y contraseña son obligatorios' });
+  }
+
+  const sql = `
+    SELECT 
+      u.id, u.usuario, u.nombre, u.apellido, u.fecnac, u.mail, u.tipo, u.pass,
+      p.telefono1, p.telefono2, p.documento_tipo, p.documento_id, p.foto_perfil,
+      p.direccion, p.localidad, p.nacionalidad, p.legajo_id
+    FROM Usuario u
+    LEFT JOIN Perfil p ON u.id = p.id
+    WHERE u.usuario = ?
+  `;
+
+  db.query(sql, [usuario], (err, resultados) => {
+    if (err) return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    if (!resultados.length) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+
+    const found = resultados[0];
+    if (!bcrypt.compareSync(pass, found.pass)) {
+      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    }
+
+    const payload = { id: found.id, rol: found.tipo };
+    const token = jwt.sign(payload, SECRET, { expiresIn: '1h' });
+
+    res.json({
+      token,
+      id: found.id,
+      tipo: found.tipo,
+      usuario: found.usuario,
+      nombre: found.nombre,
+      apellido: found.apellido,
+      fecnac: found.fecnac,
+      mail: found.mail,
+      perfil: {
+        telefono1: found.telefono1,
+        telefono2: found.telefono2,
+        documento_tipo: found.documento_tipo,
+        documento_id: found.documento_id,
+        foto_perfil: found.foto_perfil,
+        direccion: found.direccion,
+        localidad: found.localidad,
+        nacionalidad: found.nacionalidad,
+        legajo_id: found.legajo_id
+      }
+    });
+  });
+};
+
+>>>>>>> c7b9b67 (mantener logueado y rta loguin con todos los datos de usu)
 
 exports.leer = function(usuario, res) {
     db.query('SELECT * FROM Usuario', (err, datos) => {
