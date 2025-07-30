@@ -28,7 +28,7 @@ exports.login = function (usuarioData, res) {
       return res.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    const payload = { id: found.id, rol: found.tipo };
+    const payload = { id: found.id, rol: found.tipo, nombre: found.nombre, apellido: found.apellido };
     const token = jwt.sign(payload, SECRET, { expiresIn: '1h' });
 
     res.json({
