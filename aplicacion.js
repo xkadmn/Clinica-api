@@ -1,5 +1,5 @@
 const db = require('./db');
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');  
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
 
@@ -54,7 +54,6 @@ exports.login = function (usuarioData, res) {
     });
   });
 };
-
 
 exports.leer = function(usuario, res) {
     db.query('SELECT * FROM Usuario', (err, datos) => {
