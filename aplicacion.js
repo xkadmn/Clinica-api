@@ -420,3 +420,13 @@ exports.actualizarPerfil = function(usuarioId, perfilData, res) {
         }
     });
 };
+
+exports.insertarTurno = function(turnos, res) {
+  db.insertarTurnos(turnos, (err, resultado) => {
+    if (err) {
+      console.error('Error al insertarTurnos:', err);
+      return res.status(500).json({ mensaje: 'Error al insertar turnos' });
+    }
+    res.json(resultado);
+  });
+};
