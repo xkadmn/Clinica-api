@@ -305,7 +305,8 @@ WHERE u.id = ?;`;
     });
 };
 
-exports.obtenerTurnosMedicoPorSemana = function(medicoId, startDate, endDate, res) {
+exports.obtenerTurnosMedicoPorSemana = function(medicoId, startDate, _endDate, res) {
+  // startDate debe venir formateado "YYYY-MM-DD" y representar un lunes
   const sql = `
     SELECT
       id,
@@ -317,10 +318,12 @@ exports.obtenerTurnosMedicoPorSemana = function(medicoId, startDate, endDate, re
       usuario_paciente_id AS pacienteId
     FROM Turno
     WHERE usuario_medico_id = ?
-      AND fecha BETWEEN ? AND ?
+      AND fecha >= ?
+      AND fecha <= DATE_ADD(?, INTERVAL 6 DAY)
     ORDER BY fecha, hora
   `;
-  db.query(sql, [medicoId, startDate, endDate], (err, turnos) => {
+  // pasamos startDate dos veces: una para >= y otra para calcular +6 días
+  db.query(sql, [medicoId, startDate, startDate], (err, turnos) => {
     if (err) {
       console.error('Error al obtener turnos semanales:', err);
       return res.status(500).json({ mensaje: 'Error al obtener turnos' });
