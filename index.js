@@ -6,9 +6,6 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
 const app = express();
 
-// Importa el middleware verificarToken desde su módulo
-const { verificarToken } = require('./middlewares/jwt');
-
 // Middleware global
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
