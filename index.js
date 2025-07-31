@@ -73,5 +73,9 @@ app.put('/cancelarturno/:id', verificarToken, (req, res) => {
   aplicacion.cancelarTurno(req.params.id, res);
 });
 
+app.delete('/eliminarturno/:id', verificarToken, (req, res) => {
+  aplicacion.eliminarTurno(req.params.id, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
