@@ -305,18 +305,30 @@ WHERE u.id = ?;`;
     });
 };
 
-exports.obtenerturnosmedicoporsemana = function (medicoId, especialidadId, fechaInicio, fechaFin, res) {
-    const sql = `SELECT * FROM Turno WHERE usuario_medico_id = ? AND especialidad_id = ? AND fecha BETWEEN ? AND ?`;
-    
-    db.query(sql, [medicoId, especialidadId, fechaInicio, fechaFin], (err, turnos) => {
-        if (err) {
-            console.error('Error al obtener turnos:', err);
-            res.status(500).json({ message: 'Error al obtener turnos' });
-        } else {
-            res.json(turnos);
-        }
-    });
+exports.obtenerTurnosMedicoPorSemana = function(medicoId, startDate, endDate, res) {
+  const sql = `
+    SELECT
+      id,
+      usuario_medico_id   AS medicoId,
+      especialidad_id     AS especialidadId,
+      fecha,
+      hora,
+      disponible,
+      usuario_paciente_id AS pacienteId
+    FROM Turno
+    WHERE usuario_medico_id = ?
+      AND fecha BETWEEN ? AND ?
+    ORDER BY fecha, hora
+  `;
+  db.query(sql, [medicoId, startDate, endDate], (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener turnos semanales:', err);
+      return res.status(500).json({ mensaje: 'Error al obtener turnos' });
+    }
+    res.json(turnos);
+  });
 };
+
 exports.obtenerTurnosPorDia = function(medicoId, especialidadId, fecha, res) {
     const sql = `SELECT * FROM Turno WHERE usuario_medico_id = ? AND especialidad_id = ? AND fecha = ?`;
     

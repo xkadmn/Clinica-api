@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
 const app = express();
 
+const { verificarToken } = require('./middlewares/jwt');
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -55,7 +57,18 @@ app.get('/ultimo-id', verificarToken, (req, res) => {
   aplicacion.obtenerUltimoId(res);
 });
 
-app.get('/api/verturnos', verificarToken, (req, res) => aplicacion.verTurnos(res));
+app.get('/api/verturnos', verificarToken, (req, res) => {
+    const medicoId  = req.usuario.id;               // viene del JWT
+    const { startDate, endDate } = req.query;       // vienen de la URL
+    aplicacion.obtenerTurnosMedicoPorSemana(                  // llamo a mi nueva función
+      medicoId,
+      startDate,
+      endDate,
+      res
+    );
+  }
+);
+
 app.post('/api/turnos', verificarToken, (req, res) => aplicacion.insertarTurno(req.body, res));
 
 app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
