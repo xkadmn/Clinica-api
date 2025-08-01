@@ -107,8 +107,10 @@ module.exports = {
         const sql = 'SELECT * FROM Especialidad';
         query(sql, (err, resultado) => {
             if (err) {
+                console.error("Error al obtener especialidades:", err);
                 callback(err, null);
             } else {
+                console.log("Especialidades obtenidas correctamente:", resultado);
                 callback(null, resultado);
             }
         });
