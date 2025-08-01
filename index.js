@@ -5,12 +5,13 @@ const db = require('./db');
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
 const multer  = require('multer');
-const storage = multer.memoryStorage();
-const upload  = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }
-})
+const storage = multer.memoryStorage();    // guarda el archivo en memoria
+const upload  = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // max 5 MB
 const app = express();
+const cpUpload = upload.fields([
+  { name: 'perfil',      maxCount: 1 },   // tu JSON
+  { name: 'foto_perfil', maxCount: 1 }    // la imagen
+]);
 // Middleware global
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -83,21 +84,15 @@ app.put('/api/turnos/:id', (req, res) => {
 
 app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
 
-app.put('/perfil/:id', verificarToken, upload.single('foto_perfil'), (req, res) => {
-    let perfilData;
-    try {
-      // tu JSON en un campo de texto 'perfil'
-      perfilData = JSON.parse(req.body.perfil);
-    } catch (e) {
-      return res.status(400).json({ error: 'JSON de perfil inválido' });
+app.put('/perfil/:id',
+  verificarToken,
+  cpUpload,
+  (req, res) => {
+    let perfilData = JSON.parse(req.body.perfil);
+    if (req.files['foto_perfil']) {
+      // 1) Asigna el Buffer directamente
+      perfilData.foto_perfil = file.buffer;
     }
-
-    // Si llegó un archivo, lo guardamos como Buffer
-    if (req.file) {
-      perfilData.foto_perfil = req.file.buffer;
-    }
-
-    // Llamás a tu función que hace el UPDATE en la BD
     aplicacion.actualizarPerfil(req.params.id, perfilData, res);
   }
 );
