@@ -61,7 +61,19 @@ app.get('/api/verturnos', verificarToken, (req, res) => {
 });
 
 app.post('/api/turnos', verificarToken, (req, res) => aplicacion.insertarTurno(req.body, res));
+app.put('/api/turnos/:id', (req, res) => {
+    const { usuario_paciente_id, disponible } = req.body;
 
+    aplicacion.actualizarTurno(
+        req.params.id,
+        usuario_paciente_id,
+        disponible,
+        (err, result) => {
+            if (err) return res.status(500).json({ mensaje: 'Error al actualizar turno' });
+            res.json(result);
+        }
+    );
+});
 app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
 app.put('/perfil/:id', verificarToken, (req, res) => aplicacion.actualizarPerfil(req.params.id, req.body, res));
 
