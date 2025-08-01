@@ -7,7 +7,7 @@ const pool = mysql.createPool({
     user: 'hkoo_usuariosclinica',
     password: 'Clinica1234.',
     database: 'hkoo_usuarios',
-    port: ''
+    port: 3306,
 });
 
 // Función para realizar consultas
