@@ -4,6 +4,9 @@ const aplicacion = require('./aplicacion');
 const db = require('./db');
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET || 'tu_secreto_muy_seguro';
+const multer  = require('multer');
+const storage = multer.memoryStorage();    // guarda el archivo en memoria
+const upload  = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // max 5 MB
 const app = express();
 
 // Middleware global
@@ -77,10 +80,6 @@ app.put('/api/turnos/:id', (req, res) => {
 
 
 app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
-
-const multer = require('multer');
-const storage = multer.memoryStorage();           // guarda el buffer en memoria
-const upload = multer({ storage, limits: { fileSize: 5*1024*1024 } });
 
 app.put('/perfil/:id', verificarToken,upload.single('foto_perfil'),
   (req, res) => {
