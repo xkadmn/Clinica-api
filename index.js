@@ -8,7 +8,10 @@ const multer  = require('multer');
 const storage = multer.memoryStorage();    // guarda el archivo en memoria
 const upload  = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // max 5 MB
 const app = express();
-
+const cpUpload = upload.fields([
+  { name: 'perfil',      maxCount: 1 },   // tu JSON
+  { name: 'foto_perfil', maxCount: 1 }    // la imagen
+]);
 // Middleware global
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -81,15 +84,19 @@ app.put('/api/turnos/:id', (req, res) => {
 
 app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
 
-app.put('/perfil/:id', verificarToken,upload.single('foto_perfil'),
+app.put('/perfil/:id',
+  verificarToken,
+  cpUpload,
   (req, res) => {
-    const perfilData = JSON.parse(req.body.perfil);
-    if (req.file) {
-      perfilData.foto_perfil = req.file.buffer.toString('base64');
+    let perfilData = JSON.parse(req.body.perfil);
+    if (req.files['foto_perfil']) {
+      // 1) Asigna el Buffer directamente
+      perfilData.foto_perfil = req.files['foto_perfil'][0].buffer;
     }
     aplicacion.actualizarPerfil(req.params.id, perfilData, res);
   }
 );
+
 app.get('/medico/:id/especialidades', verificarToken, (req, res) => {
   const medicoId = req.params.id;
   aplicacion.obtenerEspecialidadesMedico(medicoId, (err, especialidades) => {
