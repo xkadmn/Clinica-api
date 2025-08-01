@@ -88,5 +88,10 @@ app.get('/medicos-por-especialidad/:id', (req, res) => {
     aplicacion.obtenerMedicosPorEspecialidad(req.params.id, res);
 });
 
+app.get('/api/turnos/paciente/:id', verificarToken, (req, res) => {
+    const pacienteId = req.params.id;
+    aplicacion.obtenerTurnosPorPaciente(pacienteId, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
