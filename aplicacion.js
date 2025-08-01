@@ -281,42 +281,35 @@ exports.obtenerMedicosPorEspecialidad = function(especialidadId, res) {
 };
 
 exports.obtenerPerfilPorId = function(usuarioId, res) {
+    
     const sql = `
-        SELECT 
-            u.id,
-            u.nombre,
-            u.apellido,
-            u.fecnac,
-            u.mail,
-            p.telefono1,
-            p.telefono2,
-            p.documento_tipo,
-            p.documento_id,
-            p.foto_perfil,
-            p.direccion,
-            p.localidad,
-            p.nacionalidad,
-            p.legajo_id
-        FROM Usuario u
-        JOIN Perfil p ON u.id = p.id
-        WHERE u.id = ?
-    `;
+        SELECT u.id, 
+       u.nombre, 
+       u.apellido, 
+       u.fecnac, 
+       u.mail, 
+       p.telefono1, 
+       p.telefono2, 
+       p.documento_tipo, 
+       p.documento_id, 
+       p.foto_perfil, 
+       p.direccion, 
+       p.localidad, 
+       p.nacionalidad, 
+       p.legajo_id 
+FROM Usuario u 
+JOIN Perfil p ON u.id = p.id
+WHERE u.id = ?;`;
+
     db.query(sql, [usuarioId], (err, datos) => {
         if (err) {
             console.error('Error al obtener perfil por ID:', err);
-            return res.status(500).json({ message: 'Error interno del servidor' });
+            res.status(500).json({ message: 'Error interno del servidor' });
+        } else if (datos.length === 0) {
+            res.status(404).json({ message: 'Perfil no encontrado' });
+        } else {
+            res.json(datos[0]); // Retornamos solo el primer resultado
         }
-        if (datos.length === 0) {
-            return res.status(404).json({ message: 'Perfil no encontrado' });
-        }
-        // Toma el primer (y único) resultado
-        const perfil = datos[0];
-        // convierte el Buffer de la imagen a Base64
-        if (perfil.foto_perfil && Buffer.isBuffer(perfil.foto_perfil)) {
-            perfil.foto_perfil = perfil.foto_perfil.toString('base64');
-        }
-        // Envia el objeto con foto_perfil ya como string Base64
-        res.json(perfil);
     });
 };
 
