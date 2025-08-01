@@ -84,5 +84,9 @@ app.delete('/eliminarturno/:id', verificarToken, (req, res) => {
   aplicacion.eliminarTurno(req.params.id, res);
 });
 
+app.get('/medicos-por-especialidad/:id', (req, res) => {
+    aplicacion.obtenerMedicosPorEspecialidad(req.params.id, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));

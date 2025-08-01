@@ -263,11 +263,12 @@ exports.obtenerEspecialidades = function(callback) {
 };
 
 exports.obtenerMedicosPorEspecialidad = function(especialidadId, res) {
-    const sql = `          
-       SELECT U.id AS medico_id, U.nombre, U.apellido 
+    const sql = `
+        SELECT U.id AS medico_id, U.nombre, U.apellido 
         FROM Usuario AS U 
         JOIN Especialidad_Medico AS EM ON U.id = EM.id_medico
-        WHERE EM.id_especialidad = ? AND U.aprobado = true;` ;
+        WHERE EM.id_especialidad = ? AND U.aprobado = true
+    `;
     
     db.query(sql, [especialidadId], (err, resultado) => {
         if (err) {
