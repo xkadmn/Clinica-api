@@ -93,5 +93,19 @@ app.get('/api/turnos/paciente/:id', verificarToken, (req, res) => {
     aplicacion.obtenerTurnosPorPaciente(pacienteId, res);
 });
 
+app.get('/api/verturnos-medico', (req, res) => {
+  const { medicoId, especialidadId, startDate, endDate } = req.query;
+  if (!medicoId) {
+    return res.status(400).json({ mensaje: 'medicoId es obligatorio' });
+  }
+  aplicacion.obtenerTurnosMedicoPorSemanaPublic(
+      medicoId,
+      especialidadId,
+      startDate,
+      endDate,
+      res
+  );
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));

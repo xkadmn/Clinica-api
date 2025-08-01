@@ -452,3 +452,22 @@ exports.insertarTurno = function(turnos, res) {
     res.json(resultado);
   });
 };
+
+exports.obtenerTurnosMedicoPorSemanaPublic = function(medicoId, especialidadId, startDate, endDate, res) {
+  const sql = `
+    SELECT *
+    FROM Turno
+    WHERE usuario_medico_id = ?
+      AND (? IS NULL OR especialidad_id = ?)
+      AND fecha >= ?
+      AND fecha <= DATE_ADD(?, INTERVAL 6 DAY)
+    ORDER BY fecha, hora
+  `;
+  db.query(sql, [medicoId, especialidadId, especialidadId, startDate, startDate], (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener turnos semanales:', err);
+      return res.status(500).json({ mensaje: 'Error al obtener turnos' });
+    }
+    res.json(turnos);
+  });
+};
