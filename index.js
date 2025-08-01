@@ -91,7 +91,7 @@ app.put('/perfil/:id',
     let perfilData = JSON.parse(req.body.perfil);
     if (req.files['foto_perfil']) {
       // 1) Asigna el Buffer directamente
-      perfilData.foto_perfil = req.files['foto_perfil'][0].buffer;
+      perfilData.foto_perfil = file.buffer;
     }
     aplicacion.actualizarPerfil(req.params.id, perfilData, res);
   }
