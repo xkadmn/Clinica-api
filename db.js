@@ -110,7 +110,6 @@ module.exports = {
                 console.error("Error al obtener especialidades:", err);
                 callback(err, null);
             } else {
-                console.log("Especialidades obtenidas correctamente:", resultado);
                 callback(null, resultado);
             }
         });

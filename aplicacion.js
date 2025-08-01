@@ -253,8 +253,14 @@ exports.obtenerMedicosAprobados = function(res) {
 };
 
 exports.obtenerEspecialidades = function(callback) {
-    db.obtenerEspecialidades(callback);
-}
+    db.obtenerEspecialidades((err, resultado) => {
+        if (err) {
+            callback(err, null);
+        } else {
+            callback(null, resultado);
+        }
+    });
+};
 
 exports.obtenerMedicosPorEspecialidad = function(especialidadId, res) {
     const sql = `          

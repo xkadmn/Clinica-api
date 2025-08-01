@@ -42,11 +42,18 @@ app.post('/login', (req, res) => aplicacion.login(req.body, res));
 app.post('/insertar', (req, res) => aplicacion.insertar(req.body, res));
 app.post('/insertarperfil/:usuarioId', (req, res) => aplicacion.insertarPerfil(req.body, req.params.usuarioId, res));
 app.post('/ficha-medica/:usuarioId', (req, res) => aplicacion.insertarFichaMedica(req.body, req.params.usuarioId, res));
-app.get('/especialidades', (req, res) => aplicacion.obtenerEspecialidades(res));
+app.get('/especialidades', (req, res) => {
+    aplicacion.obtenerEspecialidades((err, resultado) => {
+        if (err) {
+            console.error("Error interno obteniendo especialidades:", err);
+            return res.status(500).json({ mensaje: "Error interno obteniendo especialidades." });
+        }
+        res.json(resultado);
+    });
+});
 
 // Rutas protegidas con JWT
 app.get('/ultimo-id', verificarToken, (req, res) => aplicacion.obtenerUltimoId(res));
-
 app.get('/api/verturnos', verificarToken, (req, res) => {
   const medicoId = req.usuario.id;
   const { startDate, endDate } = req.query;
