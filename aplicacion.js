@@ -281,35 +281,32 @@ exports.obtenerMedicosPorEspecialidad = function(especialidadId, res) {
 };
 
 exports.obtenerPerfilPorId = function(usuarioId, res) {
-    const sql = `
-        SELECT u.id, 
-       u.nombre, 
-       u.apellido, 
-       u.fecnac, 
-       u.mail, 
-       p.telefono1, 
-       p.telefono2, 
-       p.documento_tipo, 
-       p.documento_id, 
-       p.foto_perfil, 
-       p.direccion, 
-       p.localidad, 
-       p.nacionalidad, 
-       p.legajo_id 
-FROM Usuario u 
-JOIN Perfil p ON u.id = p.id
-WHERE u.id = ?;`;
+  const sql = `
+    SELECT 
+      u.id, u.nombre, u.apellido, u.fecnac, u.mail,
+      p.telefono1, p.telefono2, p.documento_tipo, p.documento_id,
+      p.foto_perfil, p.direccion, p.localidad, p.nacionalidad, p.legajo_id
+    FROM Perfil AS p
+    JOIN Usuario AS u ON u.id = p.id
+    WHERE p.id = ?
+  `;
+  db.query(sql, [usuarioId], (err, resultados) => {
+    if (err) {
+      console.error('Error al obtener perfil:', err);
+      return res.status(500).json({ mensaje: 'Error interno' });
+    }
+    if (!resultados.length) {
+      return res.status(404).json({ mensaje: 'Perfil no encontrado' });
+    }
+    const perfil = resultados[0];
 
-    db.query(sql, [usuarioId], (err, datos) => {
-        if (err) {
-            console.error('Error al obtener perfil por ID:', err);
-            res.status(500).json({ message: 'Error interno del servidor' });
-        } else if (datos.length === 0) {
-            res.status(404).json({ message: 'Perfil no encontrado' });
-        } else {
-            res.json(datos[0]); // Retornamos solo el primer resultado
-        }
-    });
+    // ← Convierte el Buffer a Base64
+    if (perfil.foto_perfil && Buffer.isBuffer(perfil.foto_perfil)) {
+      perfil.foto_perfil = perfil.foto_perfil.toString('base64');
+    }
+
+    res.json(perfil);
+  });
 };
 
 exports.obtenerTurnosMedicoPorSemana = function(medicoId, startDate, _endDate, res) {
