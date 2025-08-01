@@ -74,9 +74,23 @@ app.put('/api/turnos/:id', (req, res) => {
         }
     );
 });
-app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
-app.put('/perfil/:id', verificarToken, (req, res) => aplicacion.actualizarPerfil(req.params.id, req.body, res));
 
+
+app.get('/perfil/:id', verificarToken, (req, res) => aplicacion.obtenerPerfilPorId(req.params.id, res));
+
+const multer = require('multer');
+const storage = multer.memoryStorage();           // guarda el buffer en memoria
+const upload = multer({ storage, limits: { fileSize: 5*1024*1024 } });
+
+app.put('/perfil/:id', verificarToken,upload.single('foto_perfil'),
+  (req, res) => {
+    const perfilData = JSON.parse(req.body.perfil);
+    if (req.file) {
+      perfilData.foto_perfil = req.file.buffer.toString('base64');
+    }
+    aplicacion.actualizarPerfil(req.params.id, perfilData, res);
+  }
+);
 app.get('/medico/:id/especialidades', verificarToken, (req, res) => {
   const medicoId = req.params.id;
   aplicacion.obtenerEspecialidadesMedico(medicoId, (err, especialidades) => {
