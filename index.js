@@ -124,5 +124,9 @@ app.get('/api/turnos/mis-turnos', verificarToken, (req, res) => {
     aplicacion.obtenerTurnosPorPaciente(pacienteId, res);
 });
 
+app.put('/api/cancelarturno-paciente/:id', verificarToken, (req, res) => {
+    aplicacion.cancelarTurnoPaciente(req.params.id, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));

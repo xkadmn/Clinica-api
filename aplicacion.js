@@ -485,3 +485,18 @@ exports.obtenerTurnosMedicoPorSemanaPublic = function(medicoId, especialidadId, 
     res.json(turnos);
   });
 };
+
+exports.cancelarTurnoPaciente = function(turnoId, res) {
+    const sql = 'UPDATE Turno SET disponible = 1, usuario_paciente_id = NULL WHERE id = ?';
+
+    db.query(sql, [turnoId], (err, resultado) => {
+        if (err) {
+            console.error('Error al cancelar turno por paciente:', err);
+            return res.status(500).json({ success: false, message: 'Error al cancelar turno' });
+        }
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Turno no encontrado' });
+        }
+        res.json({ success: true, message: 'Turno cancelado por paciente correctamente' });
+    });
+};
