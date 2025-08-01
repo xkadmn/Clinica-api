@@ -119,5 +119,10 @@ app.get('/api/verturnos-medico', (req, res) => {
   );
 });
 
+app.get('/api/turnos/mis-turnos', verificarToken, (req, res) => {
+    const pacienteId = req.usuario.id;  // tomado del token
+    aplicacion.obtenerTurnosPorPaciente(pacienteId, res);
+});
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
