@@ -504,3 +504,12 @@ exports.cancelarTurnoPaciente = function(turnoId, res) {
         res.json({ success: true, message: 'Turno cancelado por paciente correctamente' });
     });
 };
+
+exports.puntuarTurno = function(turnoId, puntuacion, res) {
+  const sql = 'UPDATE Turno SET puntuacion = ? WHERE id = ?';
+  db.query(sql, [puntuacion, turnoId], (err, result) => {
+    if (err) return res.status(500).json({ success:false, message:'Error al puntuar' });
+    if (result.affectedRows === 0) return res.status(404).json({ success:false, message:'Turno no encontrado' });
+    res.json({ success:true, message:'Turno puntuado correctamente' });
+  });
+};
