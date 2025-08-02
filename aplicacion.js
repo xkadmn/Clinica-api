@@ -194,17 +194,20 @@ exports.obtenerMedicosPendientes = function(res) {
     });
 };
 
-exports.aprobarMedico = function(id, aprobado, callback) {
-    const sql = 'UPDATE Usuario SET aprobado = ? WHERE id = ?';
-    db.query(sql, [aprobado, id], (err, resultado) => {
-        if (err) {
-            console.error('Error al actualizar el estado de aprobación del médico:', err);
-            callback(err, null);
-        } else {
-            console.log('Estado de aprobación del médico actualizado correctamente:', resultado);
-            callback(null, { success: true, message: 'Estado de aprobación actualizado correctamente' });
-        }
-    });
+exports.aprobarMedico = function(req, res) {
+  const id = req.params.id;
+  const aprobado = req.body.aprobado ? 1 : 0;
+  const sql = 'UPDATE Usuario SET aprobado = ? WHERE id = ?';
+  db.query(sql, [aprobado, id], (err, resultado) => {
+    if (err) {
+      console.error('Error al actualizar aprobación del médico:', err);
+      return res.status(500).json({ success: false, message: 'Error interno' });
+    }
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Médico no encontrado' });
+    }
+    res.json({ success: true, message: 'Estado de aprobación actualizado correctamente' });
+  });
 };
 
 exports.obtenerEspecialidadesMedico = function(medicoId, callback) {

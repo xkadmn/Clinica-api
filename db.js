@@ -91,18 +91,6 @@ module.exports = {
             }
         });
     },
-    aprobarMedico: function(id, callback) {
-        const sql = 'UPDATE Usuario SET aprobado = true WHERE id = ?';
-        query(sql, [id], (err, resultado) => {
-            if (err) {
-                console.error('Error al aprobar médico:', err);
-                callback({ success: false, message: 'Error al aprobar médico' });
-            } else {
-                console.log('Médico aprobado correctamente:', resultado);
-                callback({ success: true, message: 'Médico aprobado correctamente' });
-            }
-        });
-    },
     obtenerEspecialidades: function(callback) {
         const sql = 'SELECT * FROM Especialidad';
         query(sql, (err, resultado) => {

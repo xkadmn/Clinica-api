@@ -148,5 +148,20 @@ app.put('/api/cancelarturno-paciente/:id', verificarToken, (req, res) => {
     aplicacion.cancelarTurnoPaciente(req.params.id, res);
 });
 
+// Lista todos los médicos (tipo=2)
+app.get('/todos-los-medicos', verificarToken, (req, res) =>
+  aplicacion.obtenerTodosLosMedicos(res)
+);
+
+// Lista médicos pendientes (aprobado = false)
+app.get('/medicos-pendientes', verificarToken, (req, res) =>
+  aplicacion.obtenerMedicosPendientes(res)
+);
+
+// Cambia estado de aprobación
+app.put('/aprobar-medico/:id', verificarToken,
+  aplicacion.aprobarMedico
+);
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
