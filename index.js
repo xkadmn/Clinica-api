@@ -184,5 +184,9 @@ app.get(
   }
 );
 
+app.get('/medicos-aprobados', verificarToken,
+  aplicacion.obtenerMedicosAprobados
+);
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
