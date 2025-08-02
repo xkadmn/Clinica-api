@@ -520,12 +520,12 @@ exports.getEstadisticasMedico = function(medicoId, callback) {
       AVG(puntuacion) AS avgRating,
       COUNT(*) AS totalRatings
     FROM Turno
-    WHERE medico_id = ?
+    WHERE usuario_medico_id = ?
   `;
   const sqlComentarios = `
     SELECT puntuacion, comentario, fecha, especialidad
     FROM Turno
-    WHERE medico_id = ?
+    WHERE usuario_medico_id = ?
       AND puntuacion IS NOT NULL
     ORDER BY fecha DESC
     LIMIT 20
