@@ -513,3 +513,35 @@ exports.puntuarTurno = function(turnoId, data, res) {
     res.json({ success:true, message:'Turno puntuado correctamente' });
   });
 };
+
+exports.getEstadisticasMedico = function(medicoId, callback) {
+  const sqlStats = `
+    SELECT 
+      AVG(puntuacion) AS avgRating,
+      COUNT(*) AS totalRatings
+    FROM Turno
+    WHERE medico_id = ?
+  `;
+  const sqlComentarios = `
+    SELECT puntuacion, comentario, fecha, especialidad
+    FROM Turno
+    WHERE medico_id = ?
+      AND puntuacion IS NOT NULL
+    ORDER BY fecha DESC
+    LIMIT 20
+  `;
+  // Primero el agregado
+  db.query(sqlStats, [medicoId], (err, stats) => {
+    if (err) return callback(err);
+    // Luego los comentarios
+    db.query(sqlComentarios, [medicoId], (err2, comments) => {
+      if (err2) return callback(err2);
+      const result = {
+        avgRating: Number(stats[0].avgRating || 0).toFixed(2),
+        totalRatings: stats[0].totalRatings,
+        evaluations: comments
+      };
+      callback(null, result);
+    });
+  });
+};

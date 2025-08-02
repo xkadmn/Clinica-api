@@ -168,5 +168,21 @@ app.put('/api/turnos/:id/puntuacion',
   (req, res) => aplicacion.puntuarTurno(req.params.id, req.body, res)
 );
 
+
+app.get(
+  '/api/estadisticas/medico/:id',
+  verificarToken,
+  (req, res) => {
+    const id = req.params.id;
+    aplicacion.getEstadisticasMedico(id, (err, stats) => {
+      if (err) {
+        console.error('Error al obtener estadísticas:', err);
+        return res.status(500).json({ error: 'Error interno' });
+      }
+      res.json(stats);
+    });
+  }
+);
+
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
