@@ -523,22 +523,35 @@ exports.getEstadisticasMedico = function(medicoId, callback) {
     WHERE usuario_medico_id = ?
   `;
   const sqlComentarios = `
-    SELECT puntuacion, comentario, fecha, especialidad
-    FROM Turno
-    WHERE usuario_medico_id = ?
-      AND puntuacion IS NOT NULL
-    ORDER BY fecha DESC
+    SELECT t.puntuacion,
+           t.comentario,
+           t.fecha,
+           e.nombre AS especialidad
+    FROM Turno t
+    JOIN Especialidad e ON t.especialidad_id = e.id
+    WHERE t.usuario_medico_id = ?
+      AND t.puntuacion IS NOT NULL
+    ORDER BY t.fecha DESC
     LIMIT 20
   `;
-  // Primero el agregado
-  db.query(sqlStats, [medicoId], (err, stats) => {
+
+  db.query(sqlStats, [medicoId], (err, statsRows) => {
     if (err) return callback(err);
-    // Luego los comentarios
+
+    // Aquí tomamos el avg y el total desde statsRows
+    const avgRaw   = statsRows[0]?.avgRating   ?? 0;
+    const totalRaw = statsRows[0]?.totalRatings ?? 0;
+
+    // Si quieres redondear a 2 decimales pero manteniendo un número:
+    const avg = parseFloat(Number(avgRaw).toFixed(2));
+    const total = totalRaw;
+
     db.query(sqlComentarios, [medicoId], (err2, comments) => {
       if (err2) return callback(err2);
+
       const result = {
-        avgRating: Number(stats[0].avgRating || 0).toFixed(2),
-        totalRatings: stats[0].totalRatings,
+        avgRating: avg,
+        totalRatings: total,
         evaluations: comments
       };
       callback(null, result);
