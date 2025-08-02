@@ -163,10 +163,10 @@ app.put('/aprobar-medico/:id', verificarToken,
   aplicacion.aprobarMedico
 );
 
-app.put('/api/turnos/:id/puntuacion', verificarToken, (req, res) => {
-  const { puntuacion } = req.body;
-  aplicacion.puntuarTurno(req.params.id, puntuacion, res);
-});
+app.put('/api/turnos/:id/puntuacion',
+  verificarToken,
+  (req, res) => aplicacion.puntuarTurno(req.params.id, req.body, res)
+);
 
 const PORT = process.env.PORT || 7200;
 app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));

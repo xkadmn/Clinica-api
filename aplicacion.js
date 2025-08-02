@@ -374,33 +374,32 @@ exports.actualizarTurno = function(id, usuario_paciente_id, disponible, callback
 };
 
 exports.obtenerTurnosPorPaciente = function(pacienteId, res) {
-    const sql = `
-        SELECT 
-          t.id,
-          t.usuario_medico_id        AS medicoId,
-          CONCAT(u.nombre, ' ', u.apellido) AS medicoNombre,
-          t.especialidad_id          AS especialidadId,
-          e.nombre                   AS especialidadNombre,
-          t.fecha,
-          t.hora,
-          t.disponible,
-          t.usuario_paciente_id      AS pacienteId
-        FROM Turno t
-        JOIN Usuario u       ON u.id = t.usuario_medico_id
-        JOIN Especialidad e  ON e.id = t.especialidad_id
-        WHERE t.usuario_paciente_id = ?
-        ORDER BY t.fecha ASC, t.hora ASC
-    `;
-
-    db.query(sql, [pacienteId], (err, turnos) => {
-        if (err) {
-            console.error('Error al obtener turnos del paciente:', err);
-            res.status(500).json({ message: 'Error al obtener turnos del paciente' });
-        } else {
-            console.log('Turnos obtenidos con datos de médico y especialidad:', turnos);
-            res.json(turnos);
-        }
-    });
+  const sql = `
+    SELECT 
+      t.id,
+      t.usuario_medico_id      AS medicoId,
+      CONCAT(u.nombre,' ',u.apellido) AS medicoNombre,
+      t.especialidad_id        AS especialidadId,
+      e.nombre                 AS especialidadNombre,
+      t.fecha,
+      t.hora,
+      t.disponible,
+      t.usuario_paciente_id    AS pacienteId,
+      t.puntuacion,            -- <-- agregado
+      t.comentario             -- <-- agregado
+    FROM Turno t
+    JOIN Usuario u  ON u.id = t.usuario_medico_id
+    JOIN Especialidad e ON e.id = t.especialidad_id
+    WHERE t.usuario_paciente_id = ?
+    ORDER BY t.fecha ASC, t.hora ASC
+  `;
+  db.query(sql, [pacienteId], (err, turnos) => {
+    if (err) {
+      console.error('Error al obtener turnos del paciente:', err);
+      return res.status(500).json({ message: 'Error al obtener turnos del paciente' });
+    }
+    res.json(turnos);
+  });
 };
 
 exports.eliminarTurno = function(turnoId, res) {
@@ -505,9 +504,10 @@ exports.cancelarTurnoPaciente = function(turnoId, res) {
     });
 };
 
-exports.puntuarTurno = function(turnoId, puntuacion, res) {
-  const sql = 'UPDATE Turno SET puntuacion = ? WHERE id = ?';
-  db.query(sql, [puntuacion, turnoId], (err, result) => {
+exports.puntuarTurno = function(turnoId, data, res) {
+  const { puntuacion, comentario } = data;
+  const sql = 'UPDATE Turno SET puntuacion = ?, comentario = ? WHERE id = ?';
+  db.query(sql, [puntuacion, comentario || null, turnoId], (err, result) => {
     if (err) return res.status(500).json({ success:false, message:'Error al puntuar' });
     if (result.affectedRows === 0) return res.status(404).json({ success:false, message:'Turno no encontrado' });
     res.json({ success:true, message:'Turno puntuado correctamente' });
