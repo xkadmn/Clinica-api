@@ -88,14 +88,28 @@ app.put('/perfil/:id',
   verificarToken,
   cpUpload,
   (req, res) => {
-    let perfilData = JSON.parse(req.body.perfil);
-    if (req.files['foto_perfil']) {
-      // 1) Asigna el Buffer directamente
-      perfilData.foto_perfil = file.buffer;
+    // 1) Validar que venga perfil
+    if (!req.body.perfil) {
+      return res.status(400).json({ success: false, message: 'Datos de perfil faltantes' });
     }
+    let perfilData;
+    try {
+      perfilData = JSON.parse(req.body.perfil);
+    } catch (e) {
+      return res.status(400).json({ success: false, message: 'JSON inválido en perfil' });
+    }
+
+    // 2) Si subieron foto_perfil, extraer correctamente
+    const fotoField = req.files['foto_perfil'];
+    if (fotoField && fotoField.length > 0) {
+      perfilData.foto_perfil = fotoField[0].buffer;
+    }
+
+    // 3) Llamar al método de actualización
     aplicacion.actualizarPerfil(req.params.id, perfilData, res);
   }
 );
+
 
 app.get('/medico/:id/especialidades', verificarToken, (req, res) => {
   const medicoId = req.params.id;
