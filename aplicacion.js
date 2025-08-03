@@ -27,8 +27,8 @@ exports.login = function (usuarioData, res) {
     if (!bcrypt.compareSync(pass, found.pass)) {
       return res.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
-
-    const payload = { id: found.id, rol: found.tipo, nombre: found.nombre, apellido: found.apellido , aprobado: !!found.aprobado};
+const aprobadoReal = Number(found.aprobado) === 1;
+    const payload = { id: found.id, rol: found.tipo, nombre: found.nombre, apellido: found.apellido , aprobado: aprobadoReal };
     const token = jwt.sign(payload, SECRET, { expiresIn: '1h' });
 
     res.json({
@@ -40,7 +40,7 @@ exports.login = function (usuarioData, res) {
       apellido: found.apellido,
       fecnac: found.fecnac,
       mail: found.mail,
-      aprobado: !!found.aprobado,
+      aprobado: aprobadoReal,
       perfil: {
         telefono1: found.telefono1,
         telefono2: found.telefono2,
