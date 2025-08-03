@@ -129,13 +129,14 @@ exports.insertarPerfil = function(perfilData, usuarioId, res) {
         perfilData.direccion || null,
         perfilData.localidad || null,
         perfilData.nacionalidad || null,
-        perfilData.legajo_id || null 
+        perfilData.legajo_id || null ,
+        perfilData.obraSocial || null
     ];
     console.log('Datos a insertar perfil:', values);
     const sql = `
       INSERT INTO Perfil 
-        (id, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, telefono1, telefono2, documento_tipo, documento_id, mail, foto_perfil, direccion, localidad, nacionalidad, legajo_id, obra_social) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(sql, values, (err, resultado) => {
@@ -299,7 +300,9 @@ exports.obtenerPerfilPorId = function(usuarioId, res) {
        p.direccion, 
        p.localidad, 
        p.nacionalidad, 
-       p.legajo_id 
+       p.legajo_id,
+       p.obra_social AS obraSocial
+
 FROM Usuario u 
 JOIN Perfil p ON u.id = p.id
 WHERE u.id = ?;`;
@@ -427,11 +430,12 @@ exports.actualizarPerfil = function(usuarioId, perfilData, res) {
             documento_tipo = ?, 
             documento_id = ?, 
             mail = ?, 
-              foto_perfil = COALESCE(?, foto_perfil),
+            foto_perfil = COALESCE(?, foto_perfil),
             direccion = ?, 
             localidad = ?, 
             nacionalidad = ?, 
-            legajo_id = ? 
+            legajo_id = ? ,
+            obra_social = ?
         WHERE id = ?`;
 
     const values = [
@@ -445,6 +449,7 @@ exports.actualizarPerfil = function(usuarioId, perfilData, res) {
         perfilData.localidad,
         perfilData.nacionalidad,
         perfilData.legajo_id,
+        perfilData.obraSocial,
         usuarioId
     ];
 

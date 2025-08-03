@@ -89,14 +89,16 @@ app.put('/perfil/:id',
   cpUpload,
   (req, res) => {
     // 1) Validar que venga perfil
-    if (!req.body.perfil) {
-      return res.status(400).json({ success: false, message: 'Datos de perfil faltantes' });
-    }
-    let perfilData;
-    try {
-      perfilData = JSON.parse(req.body.perfil);
-    } catch (e) {
-      return res.status(400).json({ success: false, message: 'JSON inválido en perfil' });
+   let perfilData;
+    if (req.body.perfil) {
+      try {
+        perfilData = JSON.parse(req.body.perfil);
+      } catch (e) {
+        return res.status(400).json({ success: false, message: 'JSON inválido en perfil' });
+      }
+    } else {
+      // express.json() ya puso tus campos directamente en req.body
+      perfilData = req.body;
     }
 
     // 2) Si subieron foto_perfil, extraer correctamente
