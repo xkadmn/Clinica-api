@@ -46,7 +46,29 @@ app.get('/localidades', (req, res) => {
 
 app.post('/login', (req, res) => aplicacion.login(req.body, res));
 app.post('/insertar', (req, res) => aplicacion.insertar(req.body, res));
-app.post('/insertarperfil/:usuarioId', (req, res) => aplicacion.insertarPerfil(req.body, req.params.usuarioId, res));
+app.post('/insertarperfil/:usuarioId', cpUpload, (req, res) => {
+  const usuarioId = req.params.usuarioId;
+
+  // 1. Validar perfil
+  if (!req.body.perfil) {
+    return res.status(400).json({ success: false, message: 'Datos de perfil faltantes.' });
+  }
+
+  let perfilData;
+  try {
+    perfilData = JSON.parse(req.body.perfil);
+  } catch (e) {
+    return res.status(400).json({ success: false, message: 'JSON inválido en perfil.' });
+  }
+
+  // 2. Adjuntar la foto si viene en el FormData
+  if (req.files['foto_perfil'] && req.files['foto_perfil'][0]) {
+    perfilData.foto_perfil = req.files['foto_perfil'][0].buffer;
+  }
+
+  // 3. Llamar a la función original
+  aplicacion.insertarPerfil(perfilData, usuarioId, res);
+});
 app.post('/ficha-medica/:usuarioId', (req, res) => aplicacion.insertarFichaMedica(req.body, req.params.usuarioId, res));
 app.get('/especialidades', (req, res) => {
     aplicacion.obtenerEspecialidades((err, resultado) => {
