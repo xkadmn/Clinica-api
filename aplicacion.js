@@ -11,7 +11,7 @@ exports.login = function (usuarioData, res) {
 
   const sql = `
     SELECT 
-      u.id, u.usuario, u.nombre, u.apellido, u.fecnac, u.mail, u.tipo, u.pass,
+      u.id, u.usuario, u.nombre, u.apellido, u.fecnac, u.mail, u.tipo, u.pass, u.aprobado,
       p.telefono1, p.telefono2, p.documento_tipo, p.documento_id, p.foto_perfil,
       p.direccion, p.localidad, p.nacionalidad, p.legajo_id
     FROM Usuario u
@@ -28,7 +28,7 @@ exports.login = function (usuarioData, res) {
       return res.status(401).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    const payload = { id: found.id, rol: found.tipo, nombre: found.nombre, apellido: found.apellido };
+    const payload = { id: found.id, rol: found.tipo, nombre: found.nombre, apellido: found.apellido , aprobado: !!found.aprobado};
     const token = jwt.sign(payload, SECRET, { expiresIn: '1h' });
 
     res.json({
@@ -40,6 +40,7 @@ exports.login = function (usuarioData, res) {
       apellido: found.apellido,
       fecnac: found.fecnac,
       mail: found.mail,
+      aprobado: !!found.aprobado,
       perfil: {
         telefono1: found.telefono1,
         telefono2: found.telefono2,
