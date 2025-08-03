@@ -226,5 +226,5 @@ app.get('/medicos-aprobados', verificarToken,
   aplicacion.obtenerMedicosAprobados
 );
 
-const PORT = process.env.PORT || 7200;
-app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
+const PORT = process.env.PORT || 10000; // Render asigna dinámico
+app.listen(PORT, '0.0.0.0', () => console.log(`Servidor escuchando en puerto ${PORT}`));
