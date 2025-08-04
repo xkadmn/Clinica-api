@@ -226,5 +226,16 @@ app.get('/medicos-aprobados', verificarToken,
   aplicacion.obtenerMedicosAprobados
 );
 
+app.get('/usuarios', verificarToken, (req, res) => {
+  db.query('SELECT id, usuario, nombre, apellido, mail, tipo, aprobado FROM Usuario', [], (err, resultado) => {
+    if (err) {
+      console.error('Error al obtener todos los usuarios:', err);
+      res.status(500).json({ message: 'Error al obtener usuarios' });
+    } else {
+      res.json(resultado);
+    }
+  });
+});
+
 const PORT = process.env.PORT || 10000; // Render asigna dinámico
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor escuchando en puerto ${PORT}`));
