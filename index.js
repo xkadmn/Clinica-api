@@ -237,5 +237,30 @@ app.get('/usuarios', verificarToken, (req, res) => {
   });
 });
 
+app.put('/usuarios/:id/cambiarContrasena', verificarToken, (req, res) => {
+  const userId = req.params.id;
+  const { actual, nueva } = req.body;
+
+  db.query('SELECT pass FROM Usuario WHERE id = ?', [userId], (err, rows) => {
+    if (err) return res.status(500).json({ mensaje: 'Error interno' });
+    if (!rows.length) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+
+    const hashActual = rows[0].pass;
+    const bcrypt = require('bcryptjs');
+
+    // Validar contraseña actual
+    if (!bcrypt.compareSync(actual, hashActual)) {
+      return res.status(401).json({ mensaje: 'Contraseña actual incorrecta' });
+    }
+
+    // Actualizar contraseña hasheada
+    const nuevaHash = bcrypt.hashSync(nueva, 10);
+    db.query('UPDATE Usuario SET pass = ? WHERE id = ?', [nuevaHash, userId], (err2) => {
+      if (err2) return res.status(500).json({ mensaje: 'Error al actualizar contraseña' });
+      res.json({ mensaje: 'Contraseña actualizada' });
+    });
+  });
+});
+
 const PORT = process.env.PORT || 10000; // Render asigna dinámico
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor escuchando en puerto ${PORT}`));
