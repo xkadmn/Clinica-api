@@ -263,5 +263,23 @@ app.put('/usuarios/:id/cambiarContrasena', verificarToken, (req, res) => {
   });
 });
 
+app.put('/perfil/:id/obra-social', verificarToken, (req, res) => {
+  const usuarioId = req.params.id;
+  const { obraSocial } = req.body;
+
+  if (!obraSocial) {
+    return res.status(400).json({ success: false, message: 'Falta obraSocial' });
+  }
+
+  const sql = 'UPDATE Perfil SET obra_social = ? WHERE id = ?';
+  db.query(sql, [obraSocial, usuarioId], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar obra social:', err);
+      return res.status(500).json({ success: false, message: 'Error al actualizar obra social' });
+    }
+    res.json({ success: true, message: 'Obra social actualizada correctamente' });
+  });
+});
+
 const PORT = process.env.PORT || 10000; // Render asigna dinámico
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor escuchando en puerto ${PORT}`));
