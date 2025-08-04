@@ -81,6 +81,9 @@ app.get('/especialidades', (req, res) => {
 });
 
 // Rutas protegidas con JWT
+app.get('/medicos-aprobados', verificarToken,
+  aplicacion.obtenerMedicosAprobados
+);
 app.get('/ultimo-id', verificarToken, (req, res) => aplicacion.obtenerUltimoId(res));
 app.get('/api/verturnos', verificarToken, (req, res) => {
   const medicoId = req.usuario.id;
@@ -222,9 +225,7 @@ app.get(
   }
 );
 
-app.get('/medicos-aprobados', verificarToken,
-  aplicacion.obtenerMedicosAprobados
-);
+
 
 app.get('/usuarios', verificarToken, (req, res) => {
   db.query('SELECT id, usuario, nombre, apellido, mail, tipo, aprobado FROM Usuario', [], (err, resultado) => {
